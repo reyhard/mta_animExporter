@@ -58,17 +58,20 @@ rollout exportFrameDataMainUI "Export Frame Data"
 							if frameExporter_parentObject != undefined then
 							(
 								relativePosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
+								relativeLength = length relativePosition
+								format "%\n" (relativeLength as string) to:FrameDataTextFile
 								relativePosition = relativePosition as string
-								relativePosition = substituteString relativePosition "[" ""
-								relativePosition = substituteString relativePosition "]" ""
-								format "test  %\n" (relativePosition as string) to:FrameDataTextFile
+								--relativePosition = substituteString relativePosition "[" ""
+								--relativePosition = substituteString relativePosition "]" ""
+								format "%\n" (relativePosition as string) to:FrameDataTextFile
 								relativeRotation = ((frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).rotation) as eulerAngles
 								relativeRotation = relativeRotation as string
 								relativeRotation = substituteString relativeRotation "(eulerAngles " ""
 								relativeRotation = substituteString relativeRotation ")" ""
 								format "%\n" (relativeRotation as string) to:FrameDataTextFile
 							)						
-							--print ($.position as string) + "test3"
+							-- print ($.position as string) 
+							-- print ($.rotation as string) 
 						)
 					)
 				)			
