@@ -18,8 +18,8 @@ frameExporter_childObject = undefined
 rollout exportFrameDataMainUI "Export Frame Data"
 (
 	label mainLabel "Frame Exporter" 
-	label versionLabel "v0.0.1"
-	label authorLabel "Author: Redphoenix"
+	label versionLabel "v0.0.3"
+	label authorLabel "Author: Redphoenix & Reyhard"
 	pickbutton pickParent "--Parent Object--" width:buttonWidth height:buttonHeight
 	pickbutton pickChild "--Child Object--" width:buttonWidth height:buttonHeight
 	
@@ -39,6 +39,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		pickChild.text = "Child: " + child.name
 		global frameExporter_childObject = child
 	)
+	-- Function to round values, accepts 2 paramters: value and precision
 	fn round_to val n =
 	(
 		local mult = 10.0 ^ n
@@ -55,48 +56,60 @@ rollout exportFrameDataMainUI "Export Frame Data"
 				savePath = "C:\Users\\reyhard\Desktop\\testexp.txt"
 				FrameDataTextFile = createfile (savePath)
 				startPosition = [0,0,0]
+				childStr = frameExporter_childObject.name 
 				for t = animationRange.start to animationRange.end do
 				(
 					animate on
 					(
 						at time t
 						(
+							-- Get start position. It will serve as our reference position
 							if t == 1 then
 							(	
 								startPosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
 							)
-							print ("Frame: "+t as string)
-							format "\n %" ("Frame: "+t as string) to:FrameDataTextFile
+							print ("Frame: "+ t as string)
 							if frameExporter_parentObject != undefined then
 							(
+								-- Get translation
+								-- If there is change frame by frame then list animation in output file. Rotations are listed in separate file
 								relativePosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
-								-- round
 								relativeLength = length (relativePosition - startPosition)
 								relativeLength = (round_to relativeLength 5) as float
 								if relativeLength > 0 then
 								(
-									startPosition2 = relativePosition
+									frameName = t as string;
+									frameName = substituteString frameName "f" ""
+									-- Using macro to generate it
+									format "\n %" ("TRANSFORM_TRANSLATION("+ childStr as string + ","+ frameName as string) to:FrameDataTextFile
+
+									changeVector = relativePosition - startPosition
+									changeVector = relativePosition + changeVector
+									changeVector = [(round_to changeVector.x 5) as float,(round_to changeVector.y 5) as float,(round_to changeVector.z 5) as float]
+									changeVector = changeVector as string
+
+									startPosition = relativePosition
+									format ",%" (relativeLength as string) to:FrameDataTextFile
+
+									relativePosition = [(round_to relativePosition.x 5) as float,(round_to relativePosition.y 5) as float,(round_to relativePosition.z 5) as float]
+									relativePosition = relativePosition as string
+									relativePosition = substituteString relativePosition "[" ""
+									relativePosition = substituteString relativePosition "]" ""
+									format ",%" (relativePosition as string) to:FrameDataTextFile
+
+									changeVector = substituteString changeVector "[" ""
+									changeVector = substituteString changeVector "]" ""
+									format ",%)" (changeVector as string) to:FrameDataTextFile
+									
+									-- Rotation macro
+									relativeRotation = ((frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).rotation) as eulerAngles
+									relativeRotation = relativeRotation as string
+									relativeRotation = substituteString relativeRotation "(eulerAngles " ""
+									relativeRotation = substituteString relativeRotation ")" ""
+									-- format "%\n" (relativeRotation as string) to:FrameDataTextFile
 								)
-								relativePosition = relativePosition - startPosition
-								relativePosition = [(round_to relativePosition.x 5) as float,(round_to relativePosition.y 5) as float,(round_to relativePosition.z 5) as float]
-								relativePosition = relativePosition as string
-								if relativeLength > 0 then
-								(
-									startPosition = startPosition2
-								)
-								--relativePosition = substituteString relativePosition "[" ""
-								--relativePosition = substituteString relativePosition "]" ""
-								format "\n%" (relativePosition as string) to:FrameDataTextFile
-								format " start pos: %" (startPosition as string) to:FrameDataTextFile
-								format " length: %" (relativeLength as string) to:FrameDataTextFile
-								relativeRotation = ((frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).rotation) as eulerAngles
-								relativeRotation = relativeRotation as string
-								relativeRotation = substituteString relativeRotation "(eulerAngles " ""
-								relativeRotation = substituteString relativeRotation ")" ""
-								-- format "%\n" (relativeRotation as string) to:FrameDataTextFile
+								-- TODO: Rotation should be listed in separate macro
 							)						
-							-- print ($.position as string) 
-							-- print ($.rotation as string) 
 						)
 					)
 				)			
