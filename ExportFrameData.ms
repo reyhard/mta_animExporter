@@ -45,6 +45,10 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		local mult = 10.0 ^ n
 		(floor ((val * mult) + 0.5)) / mult
 	)
+	fn round_vector_to vec n =
+	(
+		[(round_to vec.x 5) as float,(round_to vec.y 5) as float,(round_to vec.z 5) as float]
+	)
 	on exportTxTFile pressed do
 	(
 		if frameExporter_parentObject != undefined then
@@ -74,8 +78,9 @@ rollout exportFrameDataMainUI "Export Frame Data"
 								-- Get translation
 								-- If there is change frame by frame then list animation in output file. Rotations are listed in separate file
 								relativePosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
-								relativeLength = length (relativePosition - startPosition)
-								relativeLength = (round_to relativeLength 5) as float
+								relativeLength = length (relativePosition - startPosition) 
+								-- Rounded and then divided by 10 - that's the scale of max rig
+								relativeLength = ((round_to relativeLength 5) as float ) / 10
 								if relativeLength > 0 then
 								(
 									frameName = t as string;
@@ -85,13 +90,14 @@ rollout exportFrameDataMainUI "Export Frame Data"
 
 									changeVector = relativePosition - startPosition
 									changeVector = relativePosition + changeVector
-									changeVector = [(round_to changeVector.x 5) as float,(round_to changeVector.y 5) as float,(round_to changeVector.z 5) as float]
+									changeVector = round_vector_to changeVector 5
+									-- [(round_to changeVector.x 5) as float,(round_to changeVector.y 5) as float,(round_to changeVector.z 5) as float]
 									changeVector = changeVector as string
 
 									startPosition = relativePosition
 									format ",%" (relativeLength as string) to:FrameDataTextFile
 
-									relativePosition = [(round_to relativePosition.x 5) as float,(round_to relativePosition.y 5) as float,(round_to relativePosition.z 5) as float]
+									relativePosition = round_vector_to relativePosition 5
 									relativePosition = relativePosition as string
 									relativePosition = substituteString relativePosition "[" ""
 									relativePosition = substituteString relativePosition "]" ""
