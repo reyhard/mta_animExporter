@@ -89,9 +89,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 									format "\n %" ("TRANSFORM_TRANSLATION("+ childStr as string + ","+ frameName as string) to:FrameDataTextFile
 
 									changeVector = relativePosition - startPosition
-									changeVector = relativePosition + changeVector
 									changeVector = round_vector_to changeVector 5
-									-- [(round_to changeVector.x 5) as float,(round_to changeVector.y 5) as float,(round_to changeVector.z 5) as float]
 									changeVector = changeVector as string
 
 									startPosition = relativePosition
