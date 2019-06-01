@@ -17,7 +17,7 @@ Export weapon animations to Arma 3 model.cfg
 				maxValue	= (frame_no)/TOTAL_FRAMES;\
 			};
 			#define TRANSFORM_ROTATION(obj_name,frame_no,rot,aPosX,aPosY,aPosZ,aDirX,aDirY,aDirZ) \
-			class ##obj_name##_rot_x_##frame_no## \
+			class ##obj_name##_rot_##aDirX##aDirY##aDirZ##_##frame_no## \
 			{\
 				type		= direct;\
 				source		= reloadMagazine.0;\
