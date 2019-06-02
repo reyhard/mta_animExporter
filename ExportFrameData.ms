@@ -61,7 +61,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		str = substituteString str "[" ""
 		str = substituteString str "]" ""
 	)
-	fn writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile vectorDirStr =
+	fn writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile vectorDirStr vectorNameStr =
 	(
 		format "\n %" ("TRANSFORM_ROTATION("+ childStr  + ","+ frameName ) to:FrameDataTextFile
 
@@ -71,7 +71,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		vectorPosition = vectorPosition as string
 		vectorPosition = remove_brackets vectorPosition  
 		format ",%" (vectorPosition) to:FrameDataTextFile
-		format ",%)" (vectorDirStr) to:FrameDataTextFile
+		format ",%,%)" (vectorDirStr) vectorNameStr to:FrameDataTextFile
 		true
 	)
 	on exportTxTFile pressed do
@@ -82,14 +82,19 @@ rollout exportFrameDataMainUI "Export Frame Data"
 			(
 				-- savePath = getSaveFilename caption:"Save Frame Data to..."  types:"Text File(*.txt)|*.txt|All|*.*|"
 				-- Save it to test file to speed up debuging
-				savePath = "H:\\Projekty\\Arma3\\rhsgref\\addons\\rhsgref_weapons2\m79\\exportedAnims.hpp"
+				--savePath = "H:\\Projekty\\Arma3\\rhsgref\\addons\\rhsgref_weapons2\m79\\exportedAnims.hpp"
+				savePath = "H:\\Projekty\\Arma3\\rhsgref\\addons\\rhsgref_weapons\\izh_18\\exportedAnims.hpp"
+				-- savePath = "H:\\Projekty\\Arma3\\rhsgref\\addons\\rhsgref_weapons2\\m1garand\\exportedAnims.hpp"
 				FrameDataTextFile = createfile (savePath)
 				startPosition = [0,0,0]
+				weaponRealtivePosition = [0,0,0]
 				lastRotX = 0
 				lastRotY = 0
 				lastRotZ = 0
 				childStr = frameExporter_childObject.name 
 				childStr = childStr as string
+				start = true
+				oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
 				for t = animationRange.start to animationRange.end do
 				(
 					animate on
@@ -97,17 +102,22 @@ rollout exportFrameDataMainUI "Export Frame Data"
 						at time t
 						(
 							-- Get start position. It will serve as our reference position
-							if t == 1 then
+							if start then
 							(	
+								oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
 								startPosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
 								-- Adjust size of vector to our scale
 								startPosition = divide_vector startPosition rigScale
+								weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_weaponCenter.transform)).pos
+								weaponRealtivePosition = divide_vector weaponRealtivePosition rigScale
+								start = false
 							)
 							if frameExporter_parentObject != undefined then
 							(
+								currentTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
 								-- Get translation
 								-- If there is change frame by frame then list animation in output file
-								relativePosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
+								relativePosition = currentTransform.pos
 								-- Adjust size of vector to our scale
 								relativePosition = divide_vector relativePosition rigScale
 								relativeLength = length (relativePosition - startPosition) 
@@ -119,8 +129,9 @@ rollout exportFrameDataMainUI "Export Frame Data"
 								(
 									-- Using macro to generate it
 									format "\n %" ("TRANSFORM_TRANSLATION("+ childStr + ","+ frameName) to:FrameDataTextFile
-
+									
 									vectorDirection = relativePosition - startPosition
+									-- weaponRealtivePosition = weaponRealtivePosition + vectorDirection
 									vectorDirection = round_vector_to vectorDirection 5
 									vectorDirection = vectorDirection as string
 
@@ -137,28 +148,44 @@ rollout exportFrameDataMainUI "Export Frame Data"
 								)
 
 								-- Get rotations and save them as macro
-								relativeRotation = ((frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).rotation) as eulerAngles
-								relativeRotation = round_vector_to relativeRotation 1 
-								weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_weaponCenter.transform)).pos
-								weaponRealtivePosition = divide_vector weaponRealtivePosition rigScale
-								if relativeRotation.x != lastRotX then
+								relativeRotation = ((currentTransform * (inverse oldTransform)).rotation) as angleAxis
+								relativeRotationVec = round_vector_to relativeRotation.axis 4
+								--relativeRotationVec = relativeRotationVec * frameExporter_childObject.dir
+								-- We need local  
+								print (frameExporter_childObject.dir ) as string
+								roundedAngle = round_to relativeRotation.angle 4
+								if roundedAngle > 0.1 then
 								(
-									angleDifference = relativeRotation.x - lastRotX
-									lastRotX = relativeRotation.x
-									output_string = writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile "1,0,0"
+									directionVectorStr = round_vector_to relativeRotation.axis 4
+									directionVectorStr = remove_brackets (directionVectorStr as string)
+									output_string = writeAngleOutput roundedAngle childStr frameName weaponRealtivePosition FrameDataTextFile directionVectorStr "x"
 								)
-								if relativeRotation.y != lastRotY then
+								/*if rotX != lastRotX then
 								(
-									angleDifference = relativeRotation.y - lastRotY
-									lastRotY = relativeRotation.y
-									output_string = writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile "0,1,0"
+									angleDifference = round_to (rotX - lastRotX) 4
+									lastRotX = rotX
+									directionVectorStr = round_vector_to directionVector[1] 4
+									directionVectorStr = remove_brackets (directionVectorStr as string)
+									output_string = writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile directionVectorStr "x"
 								)
-								if relativeRotation.z != lastRotZ then
+								if rotY != lastRotY then
+								(
+									angleDifference = round_to (rotY - lastRotY) 4
+									lastRotY = rotY
+									directionVectorStr = round_vector_to directionVector[2] 4
+									directionVectorStr = remove_brackets (directionVectorStr as string)
+									output_string = writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile directionVectorStr "y"
+								)
+								if rotZ != lastRotZ then
 								( 
-									angleDifference = relativeRotation.z - lastRotZ
-									lastRotZ = relativeRotation.z
-									output_string = writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile "0,0,1"
-								)
+									angleDifference = round_to (rotZ - lastRotZ) 4
+									lastRotZ = rotZ
+									directionVectorStr = round_vector_to directionVector[3] 4
+									directionVectorStr = remove_brackets (directionVectorStr as string)
+									output_string = writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile directionVectorStr "z"
+								)*/
+								
+								oldTransform = currentTransform
 							)						
 						)
 					)
