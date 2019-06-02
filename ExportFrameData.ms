@@ -88,6 +88,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 				FrameDataTextFile = createfile (savePath)
 				startPosition = [0,0,0]
 				weaponRealtivePosition = [0,0,0]
+				previousVector = [0,0,0]
 				lastRotX = 0
 				lastRotY = 0
 				lastRotZ = 0
@@ -148,16 +149,27 @@ rollout exportFrameDataMainUI "Export Frame Data"
 								)
 
 								-- Get rotations and save them as macro
-								relativeRotation = ((currentTransform * (inverse oldTransform)).rotation) as angleAxis
+								relativeRotation = in coordsys local ( (currentTransform * (inverse oldTransform)).rotation) as angleAxis
 								relativeRotationVec = round_vector_to relativeRotation.axis 4
+								if(previousVector != relativeRotationVec) then
+								(
+									--print (relativeRotationVec ) as string
+									--print (cross relativeRotationVec previousVector ) as string
+									previousVector = relativeRotationVec
+								)
+								relativeRotationVecCross = cross relativeRotationVec previousVector
+								if(relativeRotationVecCross != [0,0,0]) then
+								(
+									relativeRotationVec = relativeRotationVecCross
+								)
+								print (previousVector ) as string
 								--relativeRotationVec = relativeRotationVec * frameExporter_childObject.dir
 								-- We need local  
-								print (frameExporter_childObject.dir ) as string
+								--print (frameExporter_childObject.dir ) as string
 								roundedAngle = round_to relativeRotation.angle 4
-								if roundedAngle > 0.1 then
+								if roundedAngle > 0.001 then
 								(
-									directionVectorStr = round_vector_to relativeRotation.axis 4
-									directionVectorStr = remove_brackets (directionVectorStr as string)
+									directionVectorStr = remove_brackets (relativeRotationVec as string)
 									output_string = writeAngleOutput roundedAngle childStr frameName weaponRealtivePosition FrameDataTextFile directionVectorStr "x"
 								)
 								/*if rotX != lastRotX then
