@@ -6,57 +6,58 @@ if exportFrameDataMainUIFloater!=undefined then (
 )
 
 -- Misc Variables
-UIHeight = 480
+UIHeight = 505
 UIWidth = 200
 
 buttonHeight = 50
 buttonWidth = 170
 
--- Scale of our max rig  
-rigScale = 1
-
+frameExporter_savePath = ""
 frameExporter_defaultCenter = "model center"
 frameExporter_parentObject = undefined
 frameExporter_childObject = undefined
 frameExporter_modelCenter = (getNodeByName frameExporter_defaultCenter) 
+frameExporter_ID_scale = 0
+frameExporter_ID_source = 1
+frameExporter_ID_savePath = 2
+
+if(getAppData frameExporter_modelCenter frameExporter_ID_scale  == undefined)then(
+	-- Scale of our max rig  
+	rigScale = 10
+)else(
+	rigScale = (getAppData frameExporter_modelCenter frameExporter_ID_scale ) as float
+)
 frameExporter_source = "reloadMagazine.0"
---
+frameExporter_range = [0.1,1000,rigScale]
+
+-- Main UI
 rollout exportFrameDataMainUI "Export Frame Data"
 (
 	label mainLabel "Frame Exporter" 
-	label versionLabel "v0.8.5"
-	label authorLabel "Author: Redphoenix & Reyhard"
-	spinner scaleFactor "Scale: " range:[0.1,1000,10] type:#float align:#left offset:[0,20]
-	edittext animationSource "Source:" text:frameExporter_source fieldWidth:120 height:18 labelOnTop: true
-	pickbutton pickCenter "Model center: weapon center" width:buttonWidth height:buttonHeight offset:[0,10] tooltip: "By default script looks for object called as \"model center\". This object respresents [0,0,0] position of your model"
-	pickbutton pickParent "--Parent Object--" width:buttonWidth height:buttonHeight tooltip: "If your bone is attached to something in model.cfg then use this button otherwise model center will be used"
-	pickbutton pickChild "--Child Object--" width:buttonWidth height:buttonHeight tooltip: ""
-	groupBox modelGroup "Model params" pos:[5,60] width:175 height:260
+	label versionLabel "v0.9.0"
+	label authorLabel "Author: Redphoenix and Reyhard"
+	-- Model Params group
 	
-	
-	edittext savePathEdit "Save path:" text:frameExporter_source fieldWidth:160 height:18 offset:[0,20] labelOnTop: true readOnly: false
-	button exportTxTFile "Start Exporting!" width:buttonWidth height:buttonHeight offset:[0,10]
-	groupBox saveGroup "Save params" pos:[5,320] width:175 height:150
-	
-	-- Do stuff below
-	on pickCenter picked center do
+	group "Model params" 
 	(
-		pickCenter.text = "Model center: " + center.name
-		global frameExporter_modelCenter = center
-	)	
-		
-	on pickParent picked parent do
+		spinner scaleFactor "Scale: " range:frameExporter_range type:#float align:#left offset:[0,0]
+		edittext animationSource "Source:" text:frameExporter_source fieldWidth:120 height:18 labelOnTop: true
+		pickbutton pickCenter "Model center: model center" width:buttonWidth height:buttonHeight offset:[0,10] \
+		tooltip: "By default script looks for object called as \"model center\". This object respresents [0,0,0] position of your model"
+		pickbutton pickParent "--Parent Object--" width:buttonWidth height:buttonHeight \
+		tooltip: "If your bone is attached to something in model.cfg then use this button otherwise model center will be used"
+		pickbutton pickChild "--Child Object--" width:buttonWidth height:buttonHeight \
+		tooltip: ""	
+	)
+	-- Save Params group
+	group "Save params" 
 	(
-		pickParent.text = "Parent: " + parent.name
-		global frameExporter_parentObject = parent
+		edittext savePathEdit "Save path:" text:frameExporter_savePath fieldWidth:160 height:18 labelOnTop: true readOnly: false
+		button pickSavePath "Pick save path" width:buttonWidth height:buttonHeight
+		button exportTxTFile "Start Exporting!" width:buttonWidth height:buttonHeight
 	)
 	
-	on pickChild picked child do
-	(
-		pickChild.text = "Child: " + child.name
-		global frameExporter_childObject = child
-	)
-	-- Function to round values, accepts 2 paramters: value and precision
+	-- Functions
 	fn round_to val n =
 	(
 		local mult = 10.0 ^ n
@@ -81,29 +82,91 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		vectorPosition = vectorPosition as string
 		vectorPosition = remove_brackets vectorPosition  
 		-- Compose string & save it to file
-		format "\n TRANSFORM_ROTATION(%,%,%,%,%)" (childStr) (frameName) (angleDifference as string) (vectorPosition) (vectorDirStr) to:FrameDataTextFile
+		format "\n TRANSFORM_ROTATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (angleDifference as string) (vectorPosition) (vectorDirStr) to:FrameDataTextFile
 		true
 	)
+
+	-- Actions
+	on scaleFactor changed val do 
+	(
+		global rigScale = val
+		setAppData frameExporter_modelCenter 0 (val as string)
+	)
+	on animationSource changed val do
+	(
+		frameExporter_source = val
+		if frameExporter_childObject != undefined then
+		(
+			setAppData frameExporter_childObject frameExporter_ID_source val
+		)
+	)
+	on pickCenter picked center do
+	(
+		pickCenter.text = "Model center: " + center.name
+		global frameExporter_modelCenter = center
+	)	
+		
+	on pickParent picked parent do
+	(
+		pickParent.text = "Parent: " + parent.name
+		global frameExporter_parentObject = parent
+	)
+	
+	on pickChild picked child do
+	(
+		pickChild.text = "Child: " + child.name
+		global frameExporter_childObject = child
+		
+		-- Grab local data from children
+			print ("get data" + (getAppData frameExporter_modelCenter frameExporter_ID_source) as string )
+		if(getAppData frameExporter_childObject frameExporter_ID_source  != undefined)then(
+			frameExporter_source = (getAppData frameExporter_childObject frameExporter_ID_source )
+			animationSource.text = frameExporter_source
+		)
+		if(getAppData frameExporter_childObject frameExporter_ID_savePath  != undefined)then(
+			frameExporter_savePath = (getAppData frameExporter_childObject frameExporter_ID_savePath )
+			savePathEdit.text = frameExporter_savePath
+		)
+
+	)
+	on savePathEdit changed val do
+	(
+		frameExporter_source = val
+		if frameExporter_childObject != undefined then
+		(
+			setAppData frameExporter_childObject frameExporter_ID_savePath val
+		)
+	)
+	on pickSavePath pressed do
+	(
+		local savePath = getSaveFilename caption:"Save Frame Data to..."  types:"Text File(*.hpp)|*.hpp|Text file(*.txt)|*.txt|All|*.*|"
+		if savePath != undefined then
+		(
+			savePathEdit.text = savePath
+			print "done"
+			if frameExporter_childObject != undefined then
+			(
+				setAppData frameExporter_childObject frameExporter_ID_savePath savePath
+			)
+		)
+	)
+
 	on exportTxTFile pressed do
 	(
 		frameExporter_modelCenter = (getNodeByName frameExporter_defaultCenter) 
 		if frameExporter_parentObject == undefined then
 		(
-			frameExporter_parentObject == frameExporter_modelCenter
+			frameExporter_parentObject = frameExporter_modelCenter
 		)
 		if frameExporter_parentObject != undefined then
 		(
 			if frameExporter_childObject != undefined then
 			(
-				-- savePath = getSaveFilename caption:"Save Frame Data to..."  types:"Text File(*.txt)|*.txt|All|*.*|"
-				-- Save it to test file to speed up debuging
-				--savePath = "H:\\Projekty\\Arma3\\rhsgref\\addons\\rhsgref_weapons2\m79\\exportedAnims.hpp"
-				 savePath = "H:\\Projekty\\Arma3\\rhsgref\\addons\\rhsgref_weapons\\izh_18\\exportedAnims.hpp"
-				-- savePath = "P:\\rhsgref\\addons\\rhsgref_weapons2\\m79\exportedAnims.hpp"
-				--savePath = "P:\\rhsgref\\addons\\rhsgref_weapons\\izh_18\exportedAnims.hpp"
-				-- savePath = "H:\\Projekty\\Arma3\\rhsgref\\addons\\rhsgref_weapons2\\m1garand\\exportedAnims.hpp"
-				savePath = "P:\\AnimExporter\\exportedAnims_plane.hpp"
-				FrameDataTextFile = createfile (savePath)
+				if savePath == "" then
+				(
+					frameExporter_savePath = getSaveFilename caption:"Save Frame Data to..."  types:"Text File(*.txt)|*.txt|All|*.*|"
+				)
+				FrameDataTextFile = createfile (frameExporter_savePath)
 				startPosition = [0,0,0]
 				weaponRealtivePosition = [0,0,0]
 				lastRotX = 0
@@ -160,7 +223,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 									vectorPosition = remove_brackets (vectorPosition as string)
 									vectorDirection = remove_brackets (vectorDirection as string) 
 									-- Compose string and save it to file
-									format "\n TRANSFORM_TRANSLATION(%,%,%,%,%)" (childStr) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection) to:FrameDataTextFile
+									format "\n TRANSFORM_TRANSLATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection) to:FrameDataTextFile
 								)
 
 								-- Get rotations and save them as macro
