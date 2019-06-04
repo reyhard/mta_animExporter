@@ -38,7 +38,7 @@ frameExporter_range = [0.1,1000,rigScale]
 rollout exportFrameDataMainUI "Export Frame Data"
 (
 	label mainLabel "Frame Exporter" 
-	label versionLabel "v0.9.0"
+	label versionLabel "v0.9.2"
 	label authorLabel "Author: Redphoenix and Reyhard"
 	-- Model Params group
 	
@@ -107,7 +107,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 	on pickCenter picked center do
 	(
 		pickCenter.text = "Model center: " + center.name
-		global frameExporter_modelCenter = center
+		global frameExporter_modelCenter = getNodeByName center
 	)	
 		
 	on pickParent picked parent do
@@ -219,9 +219,8 @@ rollout exportFrameDataMainUI "Export Frame Data"
 								relativeLength = length (relativePosition - startPosition) 
 								-- Rounded and then 
 								relativeLength = (round_to relativeLength 5) as float 
-								frameName = t as string;
-								frameName = substituteString frameName "f" ""
-								if relativeLength > 0 then
+								frameName = ((t.frame as integer) - 1) as string;
+								if relativeLength > 0.001 then
 								(
 									-- Get frame by frame movement
 									vectorDirection = relativePosition - startPosition
