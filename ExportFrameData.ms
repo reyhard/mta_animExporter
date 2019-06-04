@@ -4,41 +4,45 @@ global exportFrameDataMainUIFloater
 if exportFrameDataMainUIFloater!=undefined then (
     closeRolloutFloater exportFrameDataMainUIFloater
 )
-try(removeRollout exportFrameDataMainUIFloater)catch()
 
 -- Misc Variables
-UIHeight = 310
+UIHeight = 480
 UIWidth = 200
 
 buttonHeight = 50
 buttonWidth = 170
 
 -- Scale of our max rig  
-rigScale = 10
+rigScale = 1
 
+frameExporter_defaultCenter = "model center"
 frameExporter_parentObject = undefined
 frameExporter_childObject = undefined
-frameExporter_weaponCenter = (getNodeByName "weapon center") 
-
+frameExporter_modelCenter = (getNodeByName frameExporter_defaultCenter) 
+frameExporter_source = "reloadMagazine.0"
 --
 rollout exportFrameDataMainUI "Export Frame Data"
 (
 	label mainLabel "Frame Exporter" 
-	label versionLabel "v0.8.4"
+	label versionLabel "v0.8.5"
 	label authorLabel "Author: Redphoenix & Reyhard"
-	pickbutton pickCenter "Model center: weapon center" width:buttonWidth height:buttonHeight
-	pickbutton pickParent "--Parent Object--" width:buttonWidth height:buttonHeight
-	pickbutton pickChild "--Child Object--" width:buttonWidth height:buttonHeight
+	spinner scaleFactor "Scale: " range:[0.1,1000,10] type:#float align:#left offset:[0,20]
+	edittext animationSource "Source:" text:frameExporter_source fieldWidth:120 height:18 labelOnTop: true
+	pickbutton pickCenter "Model center: weapon center" width:buttonWidth height:buttonHeight offset:[0,10] tooltip: "By default script looks for object called as \"model center\". This object respresents [0,0,0] position of your model"
+	pickbutton pickParent "--Parent Object--" width:buttonWidth height:buttonHeight tooltip: "If your bone is attached to something in model.cfg then use this button otherwise model center will be used"
+	pickbutton pickChild "--Child Object--" width:buttonWidth height:buttonHeight tooltip: ""
+	groupBox modelGroup "Model params" pos:[5,60] width:175 height:260
 	
-	label misc01 "-------------------------------------------------"
 	
-	button exportTxTFile "Start Exporting!" width:buttonWidth height:buttonHeight
+	edittext savePathEdit "Save path:" text:frameExporter_source fieldWidth:160 height:18 offset:[0,20] labelOnTop: true readOnly: false
+	button exportTxTFile "Start Exporting!" width:buttonWidth height:buttonHeight offset:[0,10]
+	groupBox saveGroup "Save params" pos:[5,320] width:175 height:150
 	
 	-- Do stuff below
 	on pickCenter picked center do
 	(
 		pickCenter.text = "Model center: " + center.name
-		global frameExporter_weaponCenter = center
+		global frameExporter_modelCenter = center
 	)	
 		
 	on pickParent picked parent do
@@ -76,13 +80,17 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		local vectorPosition = round_vector_to weaponRealtivePosition 4 
 		vectorPosition = vectorPosition as string
 		vectorPosition = remove_brackets vectorPosition  
-		-- Compose & save string to file
-		format "\n TRANSFORM_ROTATION(%,%,%,%)" (childStr  + ","+ frameName) (angleDifference as string) (vectorPosition) (vectorDirStr) to:FrameDataTextFile
+		-- Compose string & save it to file
+		format "\n TRANSFORM_ROTATION(%,%,%,%,%)" (childStr) (frameName) (angleDifference as string) (vectorPosition) (vectorDirStr) to:FrameDataTextFile
 		true
 	)
 	on exportTxTFile pressed do
 	(
-		frameExporter_weaponCenter = (getNodeByName "weapon center") 
+		frameExporter_modelCenter = (getNodeByName frameExporter_defaultCenter) 
+		if frameExporter_parentObject == undefined then
+		(
+			frameExporter_parentObject == frameExporter_modelCenter
+		)
 		if frameExporter_parentObject != undefined then
 		(
 			if frameExporter_childObject != undefined then
@@ -94,6 +102,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 				-- savePath = "P:\\rhsgref\\addons\\rhsgref_weapons2\\m79\exportedAnims.hpp"
 				--savePath = "P:\\rhsgref\\addons\\rhsgref_weapons\\izh_18\exportedAnims.hpp"
 				-- savePath = "H:\\Projekty\\Arma3\\rhsgref\\addons\\rhsgref_weapons2\\m1garand\\exportedAnims.hpp"
+				savePath = "P:\\AnimExporter\\exportedAnims_plane.hpp"
 				FrameDataTextFile = createfile (savePath)
 				startPosition = [0,0,0]
 				weaponRealtivePosition = [0,0,0]
@@ -101,8 +110,10 @@ rollout exportFrameDataMainUI "Export Frame Data"
 				lastRotY = 0
 				lastRotZ = 0
 				childStr = (frameExporter_childObject.name) as string
-				start = true
 				oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
+				
+				start = true
+
 				for t = animationRange.start to animationRange.end do
 				(
 					animate on
@@ -118,10 +129,11 @@ rollout exportFrameDataMainUI "Export Frame Data"
 									startPosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
 									-- Adjust size of vector to our scale
 									startPosition = divide_vector startPosition rigScale
-									weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_weaponCenter.transform)).pos
+									weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_modelCenter.transform)).pos
 									weaponRealtivePosition = divide_vector weaponRealtivePosition rigScale
 									start = false
 								)
+
 								currentTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
 								-- Get translation
 								-- If there is change frame by frame then list animation in output file
@@ -135,32 +147,27 @@ rollout exportFrameDataMainUI "Export Frame Data"
 								frameName = substituteString frameName "f" ""
 								if relativeLength > 0 then
 								(
-									-- Using macro to generate it
-									format "\n TRANSFORM_TRANSLATION(%" (childStr + ","+ frameName) to:FrameDataTextFile
-									
+									-- Get frame by frame movement
 									vectorDirection = relativePosition - startPosition
 									
 									-- Disabled. Matrix operations are stacked and this method needs improvment - as a workaround translation is stored in separate bone
 									-- weaponRealtivePosition = weaponRealtivePosition + vectorDirection
 
-									vectorDirection = round_vector_to vectorDirection 5
-
 									startPosition = relativePosition
-									format ",%" (relativeLength as string) to:FrameDataTextFile
 
 									vectorPosition = round_vector_to relativePosition 5
+									vectorDirection = round_vector_to vectorDirection 5
 									vectorPosition = remove_brackets (vectorPosition as string)
-									format ",%" (vectorPosition) to:FrameDataTextFile
-
 									vectorDirection = remove_brackets (vectorDirection as string) 
-									format ",%)" (vectorDirection) to:FrameDataTextFile
+									-- Compose string and save it to file
+									format "\n TRANSFORM_TRANSLATION(%,%,%,%,%)" (childStr) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection) to:FrameDataTextFile
 								)
 
 								-- Get rotations and save them as macro
 								-- Do comparsion between current and previous (from frame before) then output result as angle axis which Arma is using for everything
 								relativeRotation = ( (currentTransform * (inverse oldTransform)).rotation) as angleAxis
 								roundedAngle = round_to relativeRotation.angle 4
-								print ((relativeRotationVec) as string + " rotation:" + (currentTransform) as string)
+								-- print ((relativeRotationVec) as string + " rotation:" + (currentTransform) as string)
 								if roundedAngle > 0 then
 								(
 									relativeRotationVec = round_vector_to relativeRotation.axis 3
