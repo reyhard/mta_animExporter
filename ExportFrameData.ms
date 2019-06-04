@@ -21,11 +21,15 @@ frameExporter_ID_scale = 0
 frameExporter_ID_source = 1
 frameExporter_ID_savePath = 2
 
-if(getAppData frameExporter_modelCenter frameExporter_ID_scale  == undefined)then(
-	-- Scale of our max rig  
-	rigScale = 10
-)else(
-	rigScale = (getAppData frameExporter_modelCenter frameExporter_ID_scale ) as float
+-- Scale of our max rig  
+rigScale = 10
+
+-- Attempt to read some default values if model center is present
+if frameExporter_modelCenter != undefined then
+(
+	if(getAppData frameExporter_modelCenter frameExporter_ID_scale  != undefined)then(
+		rigScale = (getAppData frameExporter_modelCenter frameExporter_ID_scale ) as float
+	)
 )
 frameExporter_source = "reloadMagazine.0"
 frameExporter_range = [0.1,1000,rigScale]
@@ -117,6 +121,10 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		pickChild.text = "Child: " + child.name
 		global frameExporter_childObject = child
 		
+		if frameExporter_modelCenter == undefined then
+		(
+			return false
+		)
 		-- Grab local data from children
 			print ("get data" + (getAppData frameExporter_modelCenter frameExporter_ID_source) as string )
 		if(getAppData frameExporter_childObject frameExporter_ID_source  != undefined)then(
@@ -153,6 +161,11 @@ rollout exportFrameDataMainUI "Export Frame Data"
 
 	on exportTxTFile pressed do
 	(
+		if frameExporter_modelCenter == undefined then
+		(
+			messagebox "Please select a model center" title:"No model center"
+			return false
+		)
 		frameExporter_modelCenter = (getNodeByName frameExporter_defaultCenter) 
 		if frameExporter_parentObject == undefined then
 		(
