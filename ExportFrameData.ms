@@ -207,67 +207,64 @@ rollout exportFrameDataMainUI "Export Frame Data"
 			(
 				at time t
 				(
-					if frameExporter_parentObject != undefined then
-					(
-						-- Get start position. It will serve as our reference position
-						if start then
-						(	
-							oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
-							startPosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
-							-- Adjust size of vector to our scale
-							startPosition = divide_vector startPosition rigScale
-							weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_modelCenter.transform)).pos
-							weaponRealtivePosition = divide_vector weaponRealtivePosition rigScale
-							start = false
-						)
-
-						currentTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
-						-- Get translation
-						-- If there is change frame by frame then list animation in output file
-						relativePosition = currentTransform.pos
+					-- Get start position. It will serve as our reference position
+					if start then
+					(	
+						oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
+						startPosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
 						-- Adjust size of vector to our scale
-						relativePosition = divide_vector relativePosition rigScale
-						relativeLength = length (relativePosition - startPosition) 
-						-- Rounded and then 
-						relativeLength = (round_to relativeLength 5) as float 
-						frameName = ((t.frame as integer) - 1) as string;
-						if relativeLength > 0.001 then
-						(
-							-- Get frame by frame movement
-							vectorDirection = relativePosition - startPosition
-							
-							-- Disabled. Matrix operations are stacked and this method needs improvment - as a workaround translation is stored in separate bone
-							-- weaponRealtivePosition = weaponRealtivePosition + vectorDirection
+						startPosition = divide_vector startPosition rigScale
+						weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_modelCenter.transform)).pos
+						weaponRealtivePosition = divide_vector weaponRealtivePosition rigScale
+						start = false
+					)
 
-							startPosition = relativePosition
-
-							vectorPosition = round_vector_to relativePosition 5
-							vectorDirection = round_vector_to vectorDirection 5
-							vectorPosition = remove_brackets (vectorPosition as string)
-							vectorDirection = remove_brackets (vectorDirection as string) 
-							-- Compose string and save it to file
-							--append frameDataTextString (format "\n TRANSFORM_TRANSLATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection) )
-						)
-
-						-- Get rotations and save them as macro
-						-- Do comparsion between current and previous (from frame before) then output result as angle axis which Arma is using for everything
-						relativeRotation = ( (currentTransform * (inverse oldTransform)).rotation) as angleAxis
-						roundedAngle = round_to relativeRotation.angle 4
-						-- print ((relativeRotationVec) as string + " rotation:" + (currentTransform) as string)
-						if roundedAngle > 0 then
-						(
-							relativeRotationVec = round_vector_to relativeRotation.axis 3
-							-- We need to scale up vector before transforming by matrix
-							relativeRotationVec =  divide_vector (relativeRotationVec) 0.1
-							-- Transform vector by current local transformation matrix. (aka converting to transform space)
-							relativeRotationVec = divide_vector (relativeRotationVec *  (matrix3 currentTransform.row1 currentTransform.row2 currentTransform.row3 [0,0,0])) 10
-							relativeRotationVec = round_vector_to relativeRotationVec 3
-							directionVectorStr = remove_brackets (relativeRotationVec as string)
-							--append frameDataTextString (writeAngleOutput roundedAngle childStr frameName weaponRealtivePosition directionVectorStr)
-						)
+					currentTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
+					-- Get translation
+					-- If there is change frame by frame then list animation in output file
+					relativePosition = currentTransform.pos
+					-- Adjust size of vector to our scale
+					relativePosition = divide_vector relativePosition rigScale
+					relativeLength = length (relativePosition - startPosition) 
+					-- Rounded and then 
+					relativeLength = (round_to relativeLength 5) as float 
+					frameName = ((t.frame as integer) - 1) as string;
+					if relativeLength > 0.001 then
+					(
+						-- Get frame by frame movement
+						vectorDirection = relativePosition - startPosition
 						
-						oldTransform = currentTransform
-					)						
+						-- Disabled. Matrix operations are stacked and this method needs improvment - as a workaround translation is stored in separate bone
+						-- weaponRealtivePosition = weaponRealtivePosition + vectorDirection
+
+						startPosition = relativePosition
+
+						vectorPosition = round_vector_to relativePosition 5
+						vectorDirection = round_vector_to vectorDirection 5
+						vectorPosition = remove_brackets (vectorPosition as string)
+						vectorDirection = remove_brackets (vectorDirection as string) 
+						-- Compose string and save it to file
+						--append frameDataTextString (format "\n TRANSFORM_TRANSLATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection) )
+					)
+
+					-- Get rotations and save them as macro
+					-- Do comparsion between current and previous (from frame before) then output result as angle axis which Arma is using for everything
+					relativeRotation = ( (currentTransform * (inverse oldTransform)).rotation) as angleAxis
+					roundedAngle = round_to relativeRotation.angle 4
+					-- print ((relativeRotationVec) as string + " rotation:" + (currentTransform) as string)
+					if roundedAngle > 0 then
+					(
+						relativeRotationVec = round_vector_to relativeRotation.axis 3
+						-- We need to scale up vector before transforming by matrix
+						relativeRotationVec =  divide_vector (relativeRotationVec) 0.1
+						-- Transform vector by current local transformation matrix. (aka converting to transform space)
+						relativeRotationVec = divide_vector (relativeRotationVec *  (matrix3 currentTransform.row1 currentTransform.row2 currentTransform.row3 [0,0,0])) 10
+						relativeRotationVec = round_vector_to relativeRotationVec 3
+						directionVectorStr = remove_brackets (relativeRotationVec as string)
+						--append frameDataTextString (writeAngleOutput roundedAngle childStr frameName weaponRealtivePosition directionVectorStr)
+					)
+					
+					oldTransform = currentTransform
 				)
 			)
 		)
