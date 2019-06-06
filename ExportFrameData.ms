@@ -30,6 +30,9 @@ if frameExporter_modelCenter != undefined then
 	if(getAppData frameExporter_modelCenter frameExporter_ID_scale  != undefined)then(
 		rigScale = (getAppData frameExporter_modelCenter frameExporter_ID_scale ) as float
 	)
+)else
+(
+	frameExporter_modelCenterString = "Model center:"
 )
 frameExporter_source = "reloadMagazine.0"
 frameExporter_range = [0.1,1000,rigScale]
@@ -80,14 +83,14 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		str = substituteString str "[" ""
 		str = substituteString str "]" ""
 	)
-	fn writeAngleOutput angleDifference childStr frameName weaponRealtivePosition FrameDataTextFile vectorDirStr =
+	fn writeAngleOutput angleDifference childStr frameName weaponRealtivePosition vectorDirStr =
 	(
 		local vectorPosition = round_vector_to weaponRealtivePosition 4 
 		vectorPosition = vectorPosition as string
 		vectorPosition = remove_brackets vectorPosition  
 		-- Compose string & save it to file
-		format "\n TRANSFORM_ROTATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (angleDifference as string) (vectorPosition) (vectorDirStr) to:FrameDataTextFile
-		true
+		output = format "\n TRANSFORM_ROTATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (angleDifference as string) (vectorPosition) (vectorDirStr)
+		output
 	)
 
 	-- Actions
@@ -107,7 +110,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 	on pickCenter picked center do
 	(
 		pickCenter.text = "Model center: " + center.name
-		global frameExporter_modelCenter = getNodeByName center
+		global frameExporter_modelCenter = getNodeByName center.name
 	)	
 		
 	on pickParent picked parent do
@@ -161,117 +164,118 @@ rollout exportFrameDataMainUI "Export Frame Data"
 
 	on exportTxTFile pressed do
 	(
+
+		-- Input validation
 		if frameExporter_modelCenter == undefined then
 		(
 			messagebox "Please select a model center" title:"No model center"
 			return false
 		)
-		frameExporter_modelCenter = (getNodeByName frameExporter_defaultCenter) 
 		if frameExporter_parentObject == undefined then
 		(
 			frameExporter_parentObject = frameExporter_modelCenter
 		)
-		if frameExporter_parentObject != undefined then
-		(
-			if frameExporter_childObject != undefined then
-			(
-				if savePath == "" then
-				(
-					frameExporter_savePath = getSaveFilename caption:"Save Frame Data to..."  types:"Text File(*.txt)|*.txt|All|*.*|"
-				)
-				FrameDataTextFile = createfile (frameExporter_savePath)
-				startPosition = [0,0,0]
-				weaponRealtivePosition = [0,0,0]
-				lastRotX = 0
-				lastRotY = 0
-				lastRotZ = 0
-				childStr = (frameExporter_childObject.name) as string
-				oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
-				
-				start = true
-
-				for t = animationRange.start to animationRange.end do
-				(
-					animate on
-					(
-						at time t
-						(
-							if frameExporter_parentObject != undefined then
-							(
-								-- Get start position. It will serve as our reference position
-								if start then
-								(	
-									oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
-									startPosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
-									-- Adjust size of vector to our scale
-									startPosition = divide_vector startPosition rigScale
-									weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_modelCenter.transform)).pos
-									weaponRealtivePosition = divide_vector weaponRealtivePosition rigScale
-									start = false
-								)
-
-								currentTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
-								-- Get translation
-								-- If there is change frame by frame then list animation in output file
-								relativePosition = currentTransform.pos
-								-- Adjust size of vector to our scale
-								relativePosition = divide_vector relativePosition rigScale
-								relativeLength = length (relativePosition - startPosition) 
-								-- Rounded and then 
-								relativeLength = (round_to relativeLength 5) as float 
-								frameName = ((t.frame as integer) - 1) as string;
-								if relativeLength > 0.001 then
-								(
-									-- Get frame by frame movement
-									vectorDirection = relativePosition - startPosition
-									
-									-- Disabled. Matrix operations are stacked and this method needs improvment - as a workaround translation is stored in separate bone
-									-- weaponRealtivePosition = weaponRealtivePosition + vectorDirection
-
-									startPosition = relativePosition
-
-									vectorPosition = round_vector_to relativePosition 5
-									vectorDirection = round_vector_to vectorDirection 5
-									vectorPosition = remove_brackets (vectorPosition as string)
-									vectorDirection = remove_brackets (vectorDirection as string) 
-									-- Compose string and save it to file
-									format "\n TRANSFORM_TRANSLATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection) to:FrameDataTextFile
-								)
-
-								-- Get rotations and save them as macro
-								-- Do comparsion between current and previous (from frame before) then output result as angle axis which Arma is using for everything
-								relativeRotation = ( (currentTransform * (inverse oldTransform)).rotation) as angleAxis
-								roundedAngle = round_to relativeRotation.angle 4
-								-- print ((relativeRotationVec) as string + " rotation:" + (currentTransform) as string)
-								if roundedAngle > 0 then
-								(
-									relativeRotationVec = round_vector_to relativeRotation.axis 3
-									-- We need to scale up vector before transforming by matrix
-									relativeRotationVec =  divide_vector (relativeRotationVec) 0.1
-									-- Transform vector by current local transformation matrix. (aka converting to transform space)
-									relativeRotationVec = divide_vector (relativeRotationVec *  (matrix3 currentTransform.row1 currentTransform.row2 currentTransform.row3 [0,0,0])) 10
-									relativeRotationVec = round_vector_to relativeRotationVec 3
-									directionVectorStr = remove_brackets (relativeRotationVec as string)
-									output_string = writeAngleOutput roundedAngle childStr frameName weaponRealtivePosition FrameDataTextFile directionVectorStr
-								)
-								
-								oldTransform = currentTransform
-							)						
-						)
-					)
-				)			
-				close FrameDataTextFile
-				free FrameDataTextFile
-			)
-			else
-			(
-				messagebox "Please select child" title:"No Child"
-			)
-		)
-		else
+		if frameExporter_parentObject == undefined then
 		(
 			messagebox "Please select a parent" title:"No Parent"
+			return false
 		)
+		if frameExporter_childObject == undefined then
+		(
+			messagebox "Please select child" title:"No Child"
+			return false
+		)
+		if savePath == "" then
+		(
+			frameExporter_savePath = getSaveFilename caption:"Save Frame Data to..."  types:"Text File(*.txt)|*.txt|All|*.*|"
+		)
+		-- Variables
+		startPosition = [0,0,0]
+		weaponRealtivePosition = [0,0,0]
+		lastRotX = 0
+		lastRotY = 0
+		lastRotZ = 0
+		childStr = (frameExporter_childObject.name) as string
+		oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
+		frameDataTextString = ""
+		
+		start = true
+
+		for t = animationRange.start to animationRange.end do
+		(
+			animate on
+			(
+				at time t
+				(
+					if frameExporter_parentObject != undefined then
+					(
+						-- Get start position. It will serve as our reference position
+						if start then
+						(	
+							oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
+							startPosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
+							-- Adjust size of vector to our scale
+							startPosition = divide_vector startPosition rigScale
+							weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_modelCenter.transform)).pos
+							weaponRealtivePosition = divide_vector weaponRealtivePosition rigScale
+							start = false
+						)
+
+						currentTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
+						-- Get translation
+						-- If there is change frame by frame then list animation in output file
+						relativePosition = currentTransform.pos
+						-- Adjust size of vector to our scale
+						relativePosition = divide_vector relativePosition rigScale
+						relativeLength = length (relativePosition - startPosition) 
+						-- Rounded and then 
+						relativeLength = (round_to relativeLength 5) as float 
+						frameName = ((t.frame as integer) - 1) as string;
+						if relativeLength > 0.001 then
+						(
+							-- Get frame by frame movement
+							vectorDirection = relativePosition - startPosition
+							
+							-- Disabled. Matrix operations are stacked and this method needs improvment - as a workaround translation is stored in separate bone
+							-- weaponRealtivePosition = weaponRealtivePosition + vectorDirection
+
+							startPosition = relativePosition
+
+							vectorPosition = round_vector_to relativePosition 5
+							vectorDirection = round_vector_to vectorDirection 5
+							vectorPosition = remove_brackets (vectorPosition as string)
+							vectorDirection = remove_brackets (vectorDirection as string) 
+							-- Compose string and save it to file
+							--append frameDataTextString (format "\n TRANSFORM_TRANSLATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection) )
+						)
+
+						-- Get rotations and save them as macro
+						-- Do comparsion between current and previous (from frame before) then output result as angle axis which Arma is using for everything
+						relativeRotation = ( (currentTransform * (inverse oldTransform)).rotation) as angleAxis
+						roundedAngle = round_to relativeRotation.angle 4
+						-- print ((relativeRotationVec) as string + " rotation:" + (currentTransform) as string)
+						if roundedAngle > 0 then
+						(
+							relativeRotationVec = round_vector_to relativeRotation.axis 3
+							-- We need to scale up vector before transforming by matrix
+							relativeRotationVec =  divide_vector (relativeRotationVec) 0.1
+							-- Transform vector by current local transformation matrix. (aka converting to transform space)
+							relativeRotationVec = divide_vector (relativeRotationVec *  (matrix3 currentTransform.row1 currentTransform.row2 currentTransform.row3 [0,0,0])) 10
+							relativeRotationVec = round_vector_to relativeRotationVec 3
+							directionVectorStr = remove_brackets (relativeRotationVec as string)
+							--append frameDataTextString (writeAngleOutput roundedAngle childStr frameName weaponRealtivePosition directionVectorStr)
+						)
+						
+						oldTransform = currentTransform
+					)						
+				)
+			)
+		)
+		-- Save string to file
+		frameDataTextFile = createfile (frameExporter_savePath)
+		(format "%" frameDataTextString) to:frameDataTextFile			
+		close FrameDataTextFile
+		free FrameDataTextFile
 	)
 )
 
