@@ -20,6 +20,7 @@ frameExporter_modelCenter = (getNodeByName frameExporter_defaultCenter)
 frameExporter_ID_scale = 0
 frameExporter_ID_source = 1
 frameExporter_ID_savePath = 2
+frameExporter_modelCenterString = "Model center: model center"
 
 -- Scale of our max rig  
 rigScale = 10
@@ -32,7 +33,7 @@ if frameExporter_modelCenter != undefined then
 	)
 )else
 (
-	frameExporter_modelCenterString = "Model center:"
+	frameExporter_modelCenterString = "Model center: [0,0,0]"
 )
 frameExporter_source = "reloadMagazine.0"
 frameExporter_range = [0.1,1000,rigScale]
@@ -41,7 +42,7 @@ frameExporter_range = [0.1,1000,rigScale]
 rollout exportFrameDataMainUI "Export Frame Data"
 (
 	label mainLabel "Frame Exporter" 
-	label versionLabel "v0.9.2"
+	label versionLabel "v0.9.3"
 	label authorLabel "Author: Redphoenix and Reyhard"
 	-- Model Params group
 	
@@ -49,7 +50,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 	(
 		spinner scaleFactor "Scale: " range:frameExporter_range type:#float align:#left offset:[0,0]
 		edittext animationSource "Source:" text:frameExporter_source fieldWidth:120 height:18 labelOnTop: true
-		pickbutton pickCenter "Model center: model center" width:buttonWidth height:buttonHeight offset:[0,10] \
+		pickbutton pickCenter frameExporter_modelCenterString width:buttonWidth height:buttonHeight offset:[0,10] \
 		tooltip: "By default script looks for object called as \"model center\". This object respresents [0,0,0] position of your model"
 		pickbutton pickParent "--Parent Object--" width:buttonWidth height:buttonHeight \
 		tooltip: "If your bone is attached to something in model.cfg then use this button otherwise model center will be used"
@@ -82,15 +83,6 @@ rollout exportFrameDataMainUI "Export Frame Data"
 	(
 		str = substituteString str "[" ""
 		str = substituteString str "]" ""
-	)
-	fn writeAngleOutput angleDifference childStr frameName weaponRealtivePosition vectorDirStr =
-	(
-		local vectorPosition = round_vector_to weaponRealtivePosition 4 
-		vectorPosition = vectorPosition as string
-		vectorPosition = remove_brackets vectorPosition  
-		-- Compose string & save it to file
-		output = format "\n TRANSFORM_ROTATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (angleDifference as string) (vectorPosition) (vectorDirStr)
-		output
 	)
 
 	-- Actions
@@ -129,7 +121,6 @@ rollout exportFrameDataMainUI "Export Frame Data"
 			return false
 		)
 		-- Grab local data from children
-			print ("get data" + (getAppData frameExporter_modelCenter frameExporter_ID_source) as string )
 		if(getAppData frameExporter_childObject frameExporter_ID_source  != undefined)then(
 			frameExporter_source = (getAppData frameExporter_childObject frameExporter_ID_source )
 			animationSource.text = frameExporter_source
@@ -154,7 +145,6 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		if savePath != undefined then
 		(
 			savePathEdit.text = savePath
-			print "done"
 			if frameExporter_childObject != undefined then
 			(
 				setAppData frameExporter_childObject frameExporter_ID_savePath savePath
@@ -192,12 +182,9 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		-- Variables
 		startPosition = [0,0,0]
 		weaponRealtivePosition = [0,0,0]
-		lastRotX = 0
-		lastRotY = 0
-		lastRotZ = 0
 		childStr = (frameExporter_childObject.name) as string
 		oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
-		frameDataTextString = ""
+		frameDataTextStream = stringStream ""
 		
 		start = true
 
@@ -244,14 +231,13 @@ rollout exportFrameDataMainUI "Export Frame Data"
 						vectorPosition = remove_brackets (vectorPosition as string)
 						vectorDirection = remove_brackets (vectorDirection as string) 
 						-- Compose string and save it to file
-						--append frameDataTextString (format "\n TRANSFORM_TRANSLATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection) )
+						format "\n TRANSFORM_TRANSLATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection)  to:frameDataTextStream
 					)
 
 					-- Get rotations and save them as macro
 					-- Do comparsion between current and previous (from frame before) then output result as angle axis which Arma is using for everything
 					relativeRotation = ( (currentTransform * (inverse oldTransform)).rotation) as angleAxis
 					roundedAngle = round_to relativeRotation.angle 4
-					-- print ((relativeRotationVec) as string + " rotation:" + (currentTransform) as string)
 					if roundedAngle > 0 then
 					(
 						relativeRotationVec = round_vector_to relativeRotation.axis 3
@@ -261,16 +247,22 @@ rollout exportFrameDataMainUI "Export Frame Data"
 						relativeRotationVec = divide_vector (relativeRotationVec *  (matrix3 currentTransform.row1 currentTransform.row2 currentTransform.row3 [0,0,0])) 10
 						relativeRotationVec = round_vector_to relativeRotationVec 3
 						directionVectorStr = remove_brackets (relativeRotationVec as string)
-						--append frameDataTextString (writeAngleOutput roundedAngle childStr frameName weaponRealtivePosition directionVectorStr)
+						
+						vectorPosition = round_vector_to weaponRealtivePosition 4 
+						vectorPosition = vectorPosition as string
+						vectorPosition = remove_brackets vectorPosition  
+						-- Compose string
+						format "\n TRANSFORM_ROTATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (roundedAngle as string) (vectorPosition) (directionVectorStr) to:frameDataTextStream
 					)
 					
 					oldTransform = currentTransform
 				)
 			)
 		)
+		print frameDataTextStream
 		-- Save string to file
 		frameDataTextFile = createfile (frameExporter_savePath)
-		(format "%" frameDataTextString) to:frameDataTextFile			
+		format "%" (frameDataTextStream as string) to:frameDataTextFile			
 		close FrameDataTextFile
 		free FrameDataTextFile
 	)
