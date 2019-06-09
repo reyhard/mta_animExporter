@@ -13,7 +13,7 @@ class ##obj_name##_trans_##frame_no## \
 	axisOffset	= -length;\
 	minValue	= (frame_no-1)/TOTAL_FRAMES;\
 	maxValue	= (frame_no)/TOTAL_FRAMES;\
-};\
+};
 #define TRANSFORM_ROTATION(obj_name,frame_no,rotAng,aPosX,aPosY,aPosZ,aDirX,aDirY,aDirZ) \
 class ##obj_name##_rot_##frame_no## \
 {\
