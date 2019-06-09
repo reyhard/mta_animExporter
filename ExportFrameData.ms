@@ -21,7 +21,35 @@ frameExporter_ID_scale = 0
 frameExporter_ID_source = 1
 frameExporter_ID_savePath = 2
 frameExporter_modelCenterString = "Model center: model center"
-
+frameExporter_header = "
+#define TOTAL_FRAMES (%/1)\
+#define FRAME(fr) (fr/TOTAL_FRAMES)\
+#define TRANSFORM_TRANSLATION(obj_name,frame_no,length,aPosX,aPosY,aPosZ,aDirX,aDirY,aDirZ) \\
+class ##obj_name##_trans_##frame_no## \\
+{\\
+	type		= direct;\\
+	source		= %;\\
+	selection	= obj_name##_base;\\
+	axisPos[]	= {aPosX,aPosY,aPosZ};\\
+	axisDir[]	= {-aDirX,-aDirY,aDirZ};\\
+	angle		= 0;\\
+	axisOffset	= -length;\\
+	minValue	= (frame_no-1)/TOTAL_FRAMES;\\
+	maxValue	= (frame_no)/TOTAL_FRAMES;\\
+};\
+#define TRANSFORM_ROTATION(obj_name,frame_no,rotAng,aPosX,aPosY,aPosZ,aDirX,aDirY,aDirZ) \\
+class ##obj_name##_rot_##frame_no## \\
+{\\
+	type		= direct;\\
+	source		= %;\\
+	selection	= obj_name;\\
+	axisPos[]	= {aPosX,aPosY,aPosZ};\\
+	axisDir[]	= {-aDirX,-aDirY,aDirZ};\\
+	angle		= rotAng;\\
+	axisOffset	= 0;\\
+	minValue	= (frame_no-1)/TOTAL_FRAMES;\\
+	maxValue	= (frame_no)/TOTAL_FRAMES;\\
+};"
 -- Scale of our max rig  
 rigScale = 10
 
@@ -33,6 +61,15 @@ if frameExporter_modelCenter != undefined then
 	)
 )else
 (
+	dummyObj = dummy boxsize: [0.01,0.01,0.01] scale: [10,10,10]
+	dummyObj.scale = [10,10,10]
+	print (dummyObj.transform as string)
+	print ((dummyObj).transform as string)
+	print (dummyObj.rotation as string)
+	print ((dummyObj).rotation as string)
+	print (dummyObj.pos as string) 
+	print ((dummyObj).pos as string)
+	frameExporter_modelCenter = dummyObj
 	frameExporter_modelCenterString = "Model center: [0,0,0]"
 )
 frameExporter_source = "reloadMagazine.0"
@@ -185,7 +222,12 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		childStr = (frameExporter_childObject.name) as string
 		oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
 		frameDataTextStream = stringStream ""
-		
+		generateHeader = true
+
+		if generateHeader then
+		(
+			format frameExporter_header ((animationRange.end.frame as integer) as string) frameExporter_source frameExporter_source to:frameDataTextStream
+		)
 		start = true
 
 		for t = animationRange.start to animationRange.end do
@@ -230,8 +272,8 @@ rollout exportFrameDataMainUI "Export Frame Data"
 						vectorDirection = round_vector_to vectorDirection 5
 						vectorPosition = remove_brackets (vectorPosition as string)
 						vectorDirection = remove_brackets (vectorDirection as string) 
-						-- Compose string and save it to file
-						format "\n TRANSFORM_TRANSLATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection)  to:frameDataTextStream
+						-- Compose string and add it to string stream
+						format "\n TRANSFORM_TRANSLATION(%,%,%,%,%)" (childStr) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection)  to:frameDataTextStream
 					)
 
 					-- Get rotations and save them as macro
@@ -251,8 +293,8 @@ rollout exportFrameDataMainUI "Export Frame Data"
 						vectorPosition = round_vector_to weaponRealtivePosition 4 
 						vectorPosition = vectorPosition as string
 						vectorPosition = remove_brackets vectorPosition  
-						-- Compose string
-						format "\n TRANSFORM_ROTATION(%,%,%,%,%,%)" (childStr) (frameExporter_source) (frameName) (roundedAngle as string) (vectorPosition) (directionVectorStr) to:frameDataTextStream
+						-- Compose string and add it to string stream
+						format "\n TRANSFORM_ROTATION(%,%,%,%,%)" (childStr) (frameName) (roundedAngle as string) (vectorPosition) (directionVectorStr) to:frameDataTextStream
 					)
 					
 					oldTransform = currentTransform
