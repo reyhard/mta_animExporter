@@ -1,6 +1,6 @@
 
-#define TOTAL_FRAMES (160/1)\
-#define FRAME(fr) (fr/TOTAL_FRAMES)\
+#define TOTAL_FRAMES (160/1)
+#define FRAME(fr) (fr/TOTAL_FRAMES)
 #define TRANSFORM_TRANSLATION(obj_name,frame_no,length,aPosX,aPosY,aPosZ,aDirX,aDirY,aDirZ) \
 class ##obj_name##_trans_##frame_no## \
 {\
