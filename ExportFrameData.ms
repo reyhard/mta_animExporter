@@ -257,7 +257,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 					-- If there is change frame by frame then list animation in output file
 					relativeTransformation = (currentTransform * (inverse oldTransform)).pos
 					-- Get vector length, round it and output change if size of it bigger than 0
-					relativeLength = length (relativeTransformation) 
+					relativeLength = (length (relativeTransformation))  / rigScale
 					relativeLength = (round_to relativeLength 5) as float 
 					if relativeLength > 0.001 then
 					(
