@@ -71,7 +71,7 @@ frameExporter_range = [0.1,1000,rigScale]
 rollout exportFrameDataMainUI "Export Frame Data"
 (
 	label mainLabel "Frame Exporter" 
-	label versionLabel "v0.9.5"
+	label versionLabel "v0.9.6"
 	label authorLabel "Author: Redphoenix and Reyhard"
 
 	-- Model Params group
@@ -224,7 +224,6 @@ rollout exportFrameDataMainUI "Export Frame Data"
 			frameExporter_savePath = getSaveFilename caption:"Save Frame Data to..."  types:"Text File(*.txt)|*.txt|All|*.*|"
 		)
 		-- Variables
-		startPosition = [0,0,0]
 		weaponRealtivePosition = [0,0,0]
 		childStr = (frameExporter_childObject.name) as string
 		oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
@@ -246,34 +245,28 @@ rollout exportFrameDataMainUI "Export Frame Data"
 					if start then
 					(	
 						oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
-						startPosition = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform)).pos
-						-- Adjust size of vector to our scale
-						startPosition = divide_vector startPosition rigScale
 						weaponRealtivePosition = (frameExporter_childObject.transform * (inverse frameExporter_modelCenter.transform)).pos
 						weaponRealtivePosition = divide_vector weaponRealtivePosition rigScale
 						start = false
 					)
 
+					frameName = ((t.frame as integer) - 1) as string;
 					currentTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
+
 					-- Get translation
 					-- If there is change frame by frame then list animation in output file
-					relativePosition = currentTransform.pos
-					-- Adjust size of vector to our scale
-					relativePosition = divide_vector relativePosition rigScale
-					relativeLength = length (relativePosition - startPosition) 
-					-- Rounded and then 
+					relativeTransformation = (currentTransform * (inverse oldTransform)).pos
+					-- Get vector length, round it and output change if size of it bigger than 0
+					relativeLength = length (relativeTransformation) 
 					relativeLength = (round_to relativeLength 5) as float 
-					frameName = ((t.frame as integer) - 1) as string;
 					if relativeLength > 0.001 then
 					(
-						-- Get frame by frame movement
-						vectorDirection = relativePosition - startPosition
-						
+						vectorDirection = currentTransform.pos - oldTransform.pos
 						-- Disabled. Matrix operations are stacked and this method needs improvment - as a workaround translation is stored in separate bone
 						-- weaponRealtivePosition = weaponRealtivePosition + vectorDirection
 
-						startPosition = relativePosition
-
+						-- Adjust size of vector to our scale
+						relativePosition = divide_vector currentTransform.pos rigScale
 						vectorPosition = round_vector_to relativePosition 5
 						vectorDirection = round_vector_to vectorDirection 5
 						vectorPosition = remove_brackets (vectorPosition as string)
