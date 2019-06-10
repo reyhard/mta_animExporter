@@ -6,7 +6,7 @@ if exportFrameDataMainUIFloater!=undefined then (
 )
 
 -- Misc Variables
-UIHeight = 505
+UIHeight = 525
 UIWidth = 200
 
 buttonHeight = 50
@@ -21,8 +21,9 @@ frameExporter_ID_scale = 0
 frameExporter_ID_source = 1
 frameExporter_ID_savePath = 2
 frameExporter_modelCenterString = "Model center: model center"
-frameExporter_header = "
-#define TOTAL_FRAMES (%/1)
+frameExporter_dummy = false
+frameExporter_addHeader = true
+frameExporter_header = "#define TOTAL_FRAMES (%/1)
 #define FRAME(fr) (fr/TOTAL_FRAMES)
 #define TRANSFORM_TRANSLATION(obj_name,frame_no,length,aPosX,aPosY,aPosZ,aDirX,aDirY,aDirZ) \\
 class ##obj_name##_trans_##frame_no## \\
@@ -54,22 +55,13 @@ class ##obj_name##_rot_##frame_no## \\
 rigScale = 10
 
 -- Attempt to read some default values if model center is present
-if frameExporter_modelCenter != undefined then
+if(getAppData rootNode frameExporter_ID_scale  != undefined)then(
+	rigScale = (getAppData rootNode frameExporter_ID_scale ) as float
+)
+
+-- Default model center string
+if frameExporter_modelCenter == undefined then
 (
-	if(getAppData frameExporter_modelCenter frameExporter_ID_scale  != undefined)then(
-		rigScale = (getAppData frameExporter_modelCenter frameExporter_ID_scale ) as float
-	)
-)else
-(
-	dummyObj = dummy boxsize: [0.01,0.01,0.01] scale: [10,10,10]
-	dummyObj.scale = [10,10,10]
-	print (dummyObj.transform as string)
-	print ((dummyObj).transform as string)
-	print (dummyObj.rotation as string)
-	print ((dummyObj).rotation as string)
-	print (dummyObj.pos as string) 
-	print ((dummyObj).pos as string)
-	frameExporter_modelCenter = dummyObj
 	frameExporter_modelCenterString = "Model center: [0,0,0]"
 )
 frameExporter_source = "reloadMagazine.0"
@@ -79,24 +71,26 @@ frameExporter_range = [0.1,1000,rigScale]
 rollout exportFrameDataMainUI "Export Frame Data"
 (
 	label mainLabel "Frame Exporter" 
-	label versionLabel "v0.9.3"
+	label versionLabel "v0.9.5"
 	label authorLabel "Author: Redphoenix and Reyhard"
+
 	-- Model Params group
-	
 	group "Model params" 
 	(
-		spinner scaleFactor "Scale: " range:frameExporter_range type:#float align:#left offset:[0,0]
-		edittext animationSource "Source:" text:frameExporter_source fieldWidth:120 height:18 labelOnTop: true
+		spinner scaleFactor "Scale: " range:frameExporter_range type:#float align:#left offset:[0,0] 
+		edittext animationSource "Source:" text:frameExporter_source fieldWidth:120 height:18 labelOnTop: true \
+		tooltip: "Name of animation source"
 		pickbutton pickCenter frameExporter_modelCenterString width:buttonWidth height:buttonHeight offset:[0,10] \
-		tooltip: "By default script looks for object called as \"model center\". This object respresents [0,0,0] position of your model"
+		tooltip: "By default script looks for object called as \"model center\". This object respresents [0,0,0] position of your model. \nRight click on button restart to default."
 		pickbutton pickParent "--Parent Object--" width:buttonWidth height:buttonHeight \
-		tooltip: "If your bone is attached to something in model.cfg then use this button otherwise model center will be used"
+		tooltip: "If your bone is attached to something in model.cfg then use this button otherwise model center will be used. \nRight click to undefine."
 		pickbutton pickChild "--Child Object--" width:buttonWidth height:buttonHeight \
 		tooltip: ""	
 	)
 	-- Save Params group
 	group "Save params" 
 	(
+		checkbox addHeaderBox "Add animations macros" checked:frameExporter_addHeader
 		edittext savePathEdit "Save path:" text:frameExporter_savePath fieldWidth:160 height:18 labelOnTop: true readOnly: false
 		button pickSavePath "Pick save path" width:buttonWidth height:buttonHeight
 		button exportTxTFile "Start Exporting!" width:buttonWidth height:buttonHeight
@@ -126,11 +120,12 @@ rollout exportFrameDataMainUI "Export Frame Data"
 	on scaleFactor changed val do 
 	(
 		global rigScale = val
-		setAppData frameExporter_modelCenter 0 (val as string)
+		setAppData rootNode frameExporter_ID_scale (val as string)
 	)
 	on animationSource changed val do
 	(
 		frameExporter_source = val
+		print frameExporter_source as string
 		if frameExporter_childObject != undefined then
 		(
 			setAppData frameExporter_childObject frameExporter_ID_source val
@@ -141,22 +136,28 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		pickCenter.text = "Model center: " + center.name
 		global frameExporter_modelCenter = getNodeByName center.name
 	)	
+	on pickCenter rightclick do
+	(
+		pickCenter.text = "Model center: [0,0,0]"
+		global frameExporter_modelCenter = undefined
+	)	
 		
 	on pickParent picked parent do
 	(
 		pickParent.text = "Parent: " + parent.name
 		global frameExporter_parentObject = parent
 	)
+	on pickParent rightclick do
+	(
+		pickParent.text = "--Parent Object--"
+		global frameExporter_parentObject = undefined
+	)	
 	
 	on pickChild picked child do
 	(
 		pickChild.text = "Child: " + child.name
 		global frameExporter_childObject = child
 		
-		if frameExporter_modelCenter == undefined then
-		(
-			return false
-		)
 		-- Grab local data from children
 		if(getAppData frameExporter_childObject frameExporter_ID_source  != undefined)then(
 			frameExporter_source = (getAppData frameExporter_childObject frameExporter_ID_source )
@@ -166,8 +167,13 @@ rollout exportFrameDataMainUI "Export Frame Data"
 			frameExporter_savePath = (getAppData frameExporter_childObject frameExporter_ID_savePath )
 			savePathEdit.text = frameExporter_savePath
 		)
-
 	)
+
+	on addHeaderBox changed val do 
+	(
+		frameExporter_addHeader = val
+	)
+
 	on savePathEdit changed val do
 	(
 		frameExporter_source = val
@@ -182,6 +188,7 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		if savePath != undefined then
 		(
 			savePathEdit.text = savePath
+			frameExporter_savePath = savePath
 			if frameExporter_childObject != undefined then
 			(
 				setAppData frameExporter_childObject frameExporter_ID_savePath savePath
@@ -191,12 +198,12 @@ rollout exportFrameDataMainUI "Export Frame Data"
 
 	on exportTxTFile pressed do
 	(
-
 		-- Input validation
 		if frameExporter_modelCenter == undefined then
 		(
-			messagebox "Please select a model center" title:"No model center"
-			return false
+			-- Create dummy center
+			frameExporter_modelCenter = dummy boxsize: [0.01,0.01,0.01] transform: (Matrix3 [10,0,0] [0,0,10] [0,-10,0] [0,0,0])
+			frameExporter_dummy = true
 		)
 		if frameExporter_parentObject == undefined then
 		(
@@ -222,9 +229,8 @@ rollout exportFrameDataMainUI "Export Frame Data"
 		childStr = (frameExporter_childObject.name) as string
 		oldTransform = (frameExporter_childObject.transform * (inverse frameExporter_parentObject.transform))
 		frameDataTextStream = stringStream ""
-		generateHeader = true
 
-		if generateHeader then
+		if frameExporter_addHeader then
 		(
 			format frameExporter_header ((animationRange.end.frame as integer) as string) frameExporter_source frameExporter_source to:frameDataTextStream
 		)
@@ -301,15 +307,22 @@ rollout exportFrameDataMainUI "Export Frame Data"
 				)
 			)
 		)
-		print frameDataTextStream
+		--print frameDataTextStream
 		-- Save string to file
 		frameDataTextFile = createfile (frameExporter_savePath)
 		format "%" (frameDataTextStream as string) to:frameDataTextFile			
 		close FrameDataTextFile
 		free FrameDataTextFile
+		-- Remove dummy model center after calculations are done
+		if frameExporter_dummy then
+		(
+			if frameExporter_parentObject == frameExporter_modelCenter then  frameExporter_parentObject = undefined
+			delete frameExporter_modelCenter
+			frameExporter_modelCenter = undefined
+			frameExporter_dummy = false
+		)
 	)
 )
 
- 
 exportFrameDataMainUIFloater = newrolloutfloater "Export Frame Data" UIWidth UIHeight
 addRollout exportFrameDataMainUI exportFrameDataMainUIFloater border:false
