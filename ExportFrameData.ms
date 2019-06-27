@@ -23,7 +23,7 @@ frameExporter_ID_savePath = 2
 frameExporter_modelCenterString = "Model center: model center"
 frameExporter_dummy = false
 frameExporter_addHeader = true
-frameExporter_header = "#define TOTAL_FRAMES (%/1)
+frameExporter_header = "#define TOTAL_FRAMES %
 #define FRAME(fr) (fr/TOTAL_FRAMES)
 #define TRANSFORM_TRANSLATION(obj_name,frame_no,length,aPosX,aPosY,aPosZ,aDirX,aDirY,aDirZ) \\
 class ##obj_name##_trans_##frame_no## \\
