@@ -25,13 +25,13 @@ frameExporter_dummy = false
 frameExporter_addHeader = true
 frameExporter_header = "#define TOTAL_FRAMES %
 #define FRAME(fr) (fr/TOTAL_FRAMES)
-#define TRANSFORM_TRANSLATION(obj_name,frame_no,length,aPosX,aPosY,aPosZ,aDirX,aDirY,aDirZ) \\
+#define TRANSFORM_TRANSLATION(obj_name,frame_no,length,aDirX,aDirY,aDirZ) \\
 class ##obj_name##_trans_##frame_no## \\
 {\\
 	type		= direct;\\
 	source		= %;\\
 	selection	= obj_name##_base;\\
-	axisPos[]	= {aPosX,aPosY,aPosZ};\\
+	axisPos[]	= {0,0,0};\\
 	axisDir[]	= {-aDirX,-aDirY,aDirZ};\\
 	angle		= 0;\\
 	axisOffset	= -length;\\
@@ -267,12 +267,10 @@ rollout exportFrameDataMainUI "Export Frame Data"
 
 						-- Adjust size of vector to our scale
 						relativePosition = divide_vector currentTransform.pos rigScale
-						vectorPosition = round_vector_to relativePosition 5
 						vectorDirection = round_vector_to vectorDirection 5
-						vectorPosition = remove_brackets (vectorPosition as string)
 						vectorDirection = remove_brackets (vectorDirection as string) 
 						-- Compose string and add it to string stream
-						format "\n TRANSFORM_TRANSLATION(%,%,%,%,%)" (childStr) (frameName) (relativeLength as string) (vectorPosition) (vectorDirection)  to:frameDataTextStream
+						format "\n TRANSFORM_TRANSLATION(%,%,%,%)" (childStr) (frameName) (relativeLength as string) (vectorDirection)  to:frameDataTextStream
 					)
 
 					-- Get rotations and save them as macro
