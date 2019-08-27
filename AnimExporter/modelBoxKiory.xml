@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+<skeletondefs>
+	<skeletondef name="Head">
+		<bone name="neck">
+			<bone name="neck1">
+				<bone name="head">
+					<bone name="lBrow"/>
+					<bone name="mBrow"/>
+					<bone name="rBrow"/>
+					<bone name="lMouth"/>
+					<bone name="mMouth"/>
+					<bone name="rMouth"/>
+					<bone name="eyelids"/>
+					<bone name="LLip"/>
+				</bone>
+			</bone>
+		</bone>
+	</skeletondef>
+
+	<skeletondef name="ManSkeleton">
+		<bone name="Hips" fbxname="eHips">
+			<bone name="Spine" fbxname="eSpine">
+
+				<bone name="launcher" fbxname="elauncher"/>
+				<bone name="weapon" fbxname="eweapon"/>
+				<bone name="SLOT_BackPack" fbxname="eSlot_BackPack"/>
+				<bone name="SLOT_BackWpnR" fbxname="eSlot_BackWpnR"/>
+				<bone name="SLOT_BackWpnL" fbxname="eSlot_BackWpnL"/>
+				<bone name="HeadCutScene" fbxname="eSlot_PatrolWpn"/>
+
+				<bone name="Spine1" fbxname="eSpine1">
+					<bone name="Spine2" fbxname="eSpine2">
+
+						<bone name="camera" fbxname="ecamera"/>
+
+						<bone name="Spine3" fbxname="eSpine3">
+							<bone name="Neck" fbxname="eNeck">
+								<bone name="Neck1" fbxname="eNeck1">
+									<bone name="Head" fbxname="eHead"/>
+								</bone>
+							</bone>
+							<bone name="LeftShoulder" fbxname="eLeftShoulder">
+								<bone name="LeftArm" fbxname="eLeftArm">
+									<bone name="LeftArmRoll" fbxname="eLeftArmRoll">
+										<bone name="LeftForeArm" fbxname="eLeftForeArm">
+											<bone name="LeftForeArmRoll" fbxname="eLeftForeArmRoll">
+												<bone name="LeftHand" fbxname="eLeftHand">
+													<bone name="LeftHandRing" fbxname="eLeftHandRing">
+														<bone name="LeftHandRing1" fbxname="eLeftHandRing1">
+															<bone name="LeftHandRing2" fbxname="eLeftHandRing2">
+																<bone name="LeftHandRing3" fbxname="eLeftHandRing3"/>
+															</bone>
+														</bone>
+														<bone name="LeftHandPinky1" fbxname="eLeftHandPinky1">
+															<bone name="LeftHandPinky2" fbxname="eLeftHandPinky2">
+																<bone name="LeftHandPinky3" fbxname="eLeftHandPinky3"/>
+															</bone>
+														</bone>
+													</bone>
+													<bone name="LeftHandMiddle1" fbxname="eLeftHandMiddle1">
+														<bone name="LeftHandMiddle2" fbxname="eLeftHandMiddle2">
+															<bone name="LeftHandMiddle3" fbxname="eLeftHandMiddle3"/>
+														</bone>
+													</bone>
+													<bone name="LeftHandIndex1" fbxname="eLeftHandIndex1">
+														<bone name="LeftHandIndex2" fbxname="eLeftHandIndex2">
+															<bone name="LeftHandIndex3" fbxname="eLeftHandIndex3"/>
+														</bone>
+													</bone>
+													<bone name="LeftHandThumb1" fbxname="eLeftHandThumb1">
+														<bone name="LeftHandThumb2" fbxname="eLeftHandThumb2">
+															<bone name="LeftHandThumb3" fbxname="eLeftHandThumb3"/>
+														</bone>
+													</bone>
+												</bone>
+											</bone>
+										</bone>
+									</bone>
+								</bone>
+							</bone>
+							<bone name="RightShoulder" fbxname="eRightShoulder">
+								<bone name="RightArm" fbxname="eRightArm">
+									<bone name="RightArmRoll" fbxname="eRightArmRoll">
+										<bone name="RightForeArm" fbxname="eRightForeArm">
+											<bone name="RightForeArmRoll" fbxname="eRightForeArmRoll">
+												<bone name="RightHand" fbxname="eRightHand">
+													<bone name="RightHandRing" fbxname="eRightHandRing">
+														<bone name="RightHandRing1" fbxname="eRightHandRing1">
+															<bone name="RightHandRing2" fbxname="eRightHandRing2">
+																<bone name="RightHandRing3" fbxname="eRightHandRing3"/>
+															</bone>
+														</bone>
+														<bone name="RightHandPinky1" fbxname="eRightHandPinky1">
+															<bone name="RightHandPinky2" fbxname="eRightHandPinky2">
+																<bone name="RightHandPinky3" fbxname="eRightHandPinky3"/>
+															</bone>
+														</bone>
+													</bone>
+													<bone name="RightHandMiddle1" fbxname="eRightHandMiddle1">
+														<bone name="RightHandMiddle2" fbxname="eRightHandMiddle2">
+															<bone name="RightHandMiddle3" fbxname="eRightHandMiddle3"/>
+														</bone>
+													</bone>
+													<bone name="RightHandIndex1" fbxname="eRightHandIndex1">
+														<bone name="RightHandIndex2" fbxname="eRightHandIndex2">
+															<bone name="RightHandIndex3" fbxname="eRightHandIndex3"/>
+														</bone>
+													</bone>
+													<bone name="RightHandThumb1" fbxname="eRightHandThumb1">
+														<bone name="RightHandThumb2" fbxname="eRightHandThumb2">
+															<bone name="RightHandThumb3" fbxname="eRightHandThumb3"/>
+														</bone>
+													</bone>
+												</bone>
+											</bone>
+										</bone>
+									</bone>
+								</bone>
+							</bone>
+						</bone>
+					</bone>
+				</bone>
+			</bone>
+
+			<bone name="Pelvis" fbxname="ePelvis">
+				<bone name="LeftUpLeg" fbxname="eLeftUpLeg">
+					<bone name="LeftUpLegRoll" fbxname="eLeftUpLegRoll">
+						<bone name="LeftLeg" fbxname="eLeftLeg">
+							<bone name="LeftLegRoll" fbxname="eLeftLegRoll">
+								<bone name="LeftFoot" fbxname="eLeftFoot">
+									<bone name="LeftToeBase" fbxname="eLeftToeBase"/>
+								</bone>
+							</bone>
+						</bone>
+					</bone>
+				</bone>
+				<bone name="RightUpLeg" fbxname="eRightUpLeg">
+					<bone name="RightUpLegRoll" fbxname="eRightUpLegRoll">
+						<bone name="RightLeg" fbxname="eRightLeg">
+							<bone name="RightLegRoll" fbxname="eRightLegRoll">
+								<bone name="RightFoot" fbxname="eRightFoot">
+									<bone name="RightToeBase" fbxname="eRightToeBase"/>
+								</bone>
+							</bone>
+						</bone>
+					</bone>
+				</bone>
+
+				<bone name="SLOT_ButtPack"  fbxname="eSlot_ButtPack"/>
+			</bone>
+
+		</bone>
+	</skeletondef>
+
+
+	<skeletondef name="WomanSkeleton">
+		<bone name="Hips" fbxname="eHips">
+			<bone name="Spine" fbxname="eSpine">
+
+				<bone name="Spine1" fbxname="eSpine1">
+					<bone name="Spine2" fbxname="eSpine2">
+						<bone name="Spine3" fbxname="eSpine3">
+							<bone name="camera" fbxname="ecamera"/>
+							<bone name="Neck" fbxname="eNeck">
+								<bone name="Neck1" fbxname="eNeck1">
+									<bone name="Head" fbxname="eHead"/>
+								</bone>
+							</bone>
+							<bone name="LeftShoulder" fbxname="eLeftShoulder">
+								<bone name="LeftArm" fbxname="eLeftArm">
+									<bone name="LeftArmRoll" fbxname="eLeftArmRoll">
+										<bone name="LeftForeArm" fbxname="eLeftForeArm">
+											<bone name="LeftForeArmRoll" fbxname="eLeftForeArmRoll">
+												<bone name="LeftHand" fbxname="eLeftHand">
+													<bone name="LeftInHandRing" fbxname="eLeftInHandRing">
+														<bone name="LeftHandRing1" fbxname="eLeftHandRing1">
+															<bone name="LeftHandRing2" fbxname="eLeftHandRing2">
+																<bone name="LeftHandRing3" fbxname="eLeftHandRing3"/>
+															</bone>
+														</bone>
+														<bone name="LeftHandPinky1" fbxname="eLeftHandPinky1">
+															<bone name="LeftHandPinky2" fbxname="eLeftHandPinky2">
+																<bone name="LeftHandPinky3" fbxname="eLeftHandPinky3"/>
+															</bone>
+														</bone>
+													</bone>
+													<bone name="LeftHandMiddle1" fbxname="eLeftHandMiddle1">
+														<bone name="LeftHandMiddle2" fbxname="eLeftHandMiddle2">
+															<bone name="LeftHandMiddle3" fbxname="eLeftHandMiddle3"/>
+														</bone>
+													</bone>
+													<bone name="LeftHandIndex1" fbxname="eLeftHandIndex1">
+														<bone name="LeftHandIndex2" fbxname="eLeftHandIndex2">
+															<bone name="LeftHandIndex3" fbxname="eLeftHandIndex3"/>
+														</bone>
+													</bone>
+													<bone name="LeftHandThumb1" fbxname="eLeftHandThumb1">
+														<bone name="LeftHandThumb2" fbxname="eLeftHandThumb2">
+															<bone name="LeftHandThumb3" fbxname="eLeftHandThumb3"/>
+														</bone>
+													</bone>
+												</bone>
+											</bone>
+										</bone>
+									</bone>
+								</bone>
+							</bone>
+							<bone name="RightShoulder" fbxname="eRightShoulder">
+								<bone name="RightArm" fbxname="eRightArm">
+									<bone name="RightArmRoll" fbxname="eRightArmRoll">
+										<bone name="RightForeArm" fbxname="eRightForeArm">
+											<bone name="RightForeArmRoll" fbxname="eRightForeArmRoll">
+												<bone name="RightHand" fbxname="eRightHand">
+													<bone name="RightInHandRing" fbxname="eRightInHandRing">
+														<bone name="RightHandRing1" fbxname="eRightHandRing1">
+															<bone name="RightHandRing2" fbxname="eRightHandRing2">
+																<bone name="RightHandRing3" fbxname="eRightHandRing3"/>
+															</bone>
+														</bone>
+														<bone name="RightHandPinky1" fbxname="eRightHandPinky1">
+															<bone name="RightHandPinky2" fbxname="eRightHandPinky2">
+																<bone name="RightHandPinky3" fbxname="eRightHandPinky3"/>
+															</bone>
+														</bone>
+													</bone>
+													<bone name="RightHandMiddle1" fbxname="eRightHandMiddle1">
+														<bone name="RightHandMiddle2" fbxname="eRightHandMiddle2">
+															<bone name="RightHandMiddle3" fbxname="eRightHandMiddle3"/>
+														</bone>
+													</bone>
+													<bone name="RightHandIndex1" fbxname="eRightHandIndex1">
+														<bone name="RightHandIndex2" fbxname="eRightHandIndex2">
+															<bone name="RightHandIndex3" fbxname="eRightHandIndex3"/>
+														</bone>
+													</bone>
+													<bone name="RightHandThumb1" fbxname="eRightHandThumb1">
+														<bone name="RightHandThumb2" fbxname="eRightHandThumb2">
+															<bone name="RightHandThumb3" fbxname="eRightHandThumb3"/>
+														</bone>
+													</bone>
+												</bone>
+											</bone>
+										</bone>
+									</bone>
+								</bone>
+							</bone>
+						</bone>
+					</bone>
+				</bone>
+			</bone>
+
+			<bone name="Pelvis" fbxname="ePelvis">
+				<bone name="LeftUpLeg" fbxname="eLeftUpLeg">
+					<bone name="LeftUpLegRoll" fbxname="eLeftUpLegRoll">
+						<bone name="LeftLeg" fbxname="eLeftLeg">
+							<bone name="LeftLegRoll" fbxname="eLeftLegRoll">
+								<bone name="LeftFoot" fbxname="eLeftFoot">
+									<bone name="LeftToeBase" fbxname="eLeftToeBase"/>
+								</bone>
+							</bone>
+						</bone>
+					</bone>
+				</bone>
+				<bone name="RightUpLeg" fbxname="eRightUpLeg">
+					<bone name="RightUpLegRoll" fbxname="eRightUpLegRoll">
+						<bone name="RightLeg" fbxname="eRightLeg">
+							<bone name="RightLegRoll" fbxname="eRightLegRoll">
+								<bone name="RightFoot" fbxname="eRightFoot">
+									<bone name="RightToeBase" fbxname="eRightToeBase"/>
+								</bone>
+							</bone>
+						</bone>
+					</bone>
+				</bone>
+			</bone>
+		</bone>
+	</skeletondef>
+
+	<skeletondef name="CowSkeleton">
+		<bone name="Hips" fbxname="eHips">
+			<bone name="Spine" fbxname="eSpine">
+				<bone name="Spine1" fbxname="eSpine1">
+					<bone name="Spine2" fbxname="eSpine2">
+						<bone name="Neck" fbxname="eNeck">
+							<bone name="Neck1" fbxname="eNeck1">
+								<bone name="Head" fbxname="eHead">
+
+								</bone>
+							</bone>
+						</bone>
+							<bone name="LeftArm" fbxname="eLeftArm">
+								<bone name="LeftForeArm" fbxname="eLeftForeArm">
+									<bone name="LeftHand" fbxname="eLeftHand">
+										<bone name="LeftFingerBase" fbxname="eLeftFingerBase"/>
+									</bone>
+								</bone>
+							</bone>
+							<bone name="RightArm" fbxname="eRightArm">
+								<bone name="RightForeArm" fbxname="eRightForeArm">
+									<bone name="RightHand" fbxname="eRightHand">
+										<bone name="RightFingerBase" fbxname="eRightFingerBase"/>
+									</bone>
+								</bone>
+							</bone>
+					</bone>
+				</bone>
+			</bone>
+			<bone name="LeftUpLeg" fbxname="eLeftUpLeg">
+				<bone name="LeftLeg" fbxname="eLeftLeg">
+					<bone name="LeftFoot" fbxname="eLeftFoot">
+						<bone name="LeftToeBase" fbxname="eLeftToeBase"/>
+					</bone>
+				</bone>
+			</bone>
+			<bone name="RightUpLeg" fbxname="eRightUpLeg">
+				<bone name="RightLeg" fbxname="eRightLeg">
+					<bone name="RightFoot" fbxname="eRightFoot">
+						<bone name="RightToeBase" fbxname="eRightToeBase"/>
+					</bone>
+				</bone>
+			</bone>
+			<bone name="Tail1" fbxname="eTail1">
+				<bone name="Tail2" fbxname="eTail2">
+					<bone name="Tail3" fbxname="eTail3">
+						<bone name="Tail4" fbxname="eTail4"/>
+					</bone>
+				</bone>
+			</bone>
+			<bone name="TitLeft" fbxname="eTitLeft"/>
+			<bone name="TitRight" fbxname="eTitRight"/>
+		</bone>
+	</skeletondef>
+
+	<skeletondef name="DogSkeleton">
+		<bone name="Hips" fbxname="_Hips">
+			<bone name="Spine" fbxname="_Spine">
+				<bone name="Spine1" fbxname="_Spine1">
+					<bone name="Spine2" fbxname="_Spine2">
+						<bone name="Neck" fbxname="_Neck">
+							<bone name="Neck1" fbxname="_Neck1">
+								<bone name="Head" fbxname="_Head">
+									<bone name="LeftEar" fbxname="_LeftEar"/>
+									<bone name="RightEar" fbxname="_RightEar"/>
+									<bone name="Jaw" fbxname="_Jaw">
+										<bone name="Tongue1" fbxname="_Tongue1">
+											<bone name="Tongue2" fbxname="_Tongue2"/>
+										</bone>
+									</bone>
+								</bone>
+							</bone>
+						</bone>
+						<bone name="LeftShoulder" fbxname="_LeftShoulder">
+							<bone name="LeftArm" fbxname="_LeftArm">
+								<bone name="LeftForeArm" fbxname="_LeftForeArm">
+									<bone name="LeftHand" fbxname="_LeftHand">
+										<bone name="LeftFinger" fbxname="_LeftFinger"/>
+									</bone>
+								</bone>
+							</bone>
+						</bone>
+						<bone name="RightShoulder" fbxname="_RightShoulder">
+							<bone name="RightArm" fbxname="_RightArm">
+								<bone name="RightForeArm" fbxname="_RightForeArm">
+									<bone name="RightHand" fbxname="_RightHand">
+										<bone name="RightFinger" fbxname="_RightFinger"/>
+									</bone>
+								</bone>
+							</bone>
+						</bone>
+					</bone>
+				</bone>
+			</bone>
+			<bone name="LeftUpLeg" fbxname="_LeftUpLeg">
+				<bone name="LeftLeg" fbxname="_LeftLeg">
+					<bone name="LeftFoot" fbxname="_LeftFoot">
+						<bone name="LeftToe" fbxname="_LeftToe"/>
+					</bone>
+				</bone>
+			</bone>
+			<bone name="RightUpLeg" fbxname="_RightUpLeg">
+				<bone name="RightLeg" fbxname="_RightLeg">
+					<bone name="RightFoot" fbxname="_RightFoot">
+						<bone name="RightToe" fbxname="_RightToe"/>
+					</bone>
+				</bone>
+			</bone>
+			<bone name="Tail1" fbxname="_Tail1">
+				<bone name="Tail2" fbxname="_Tail2">
+					<bone name="Tail3" fbxname="_Tail3"/>
+				</bone>
+			</bone>
+		</bone>
+	</skeletondef>
+
+</skeletondefs>
