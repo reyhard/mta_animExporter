@@ -36,35 +36,40 @@ in them I would recommend using Google to find them.
 
 -----
 
+|   |   |   |
+| ------------ | ------------ | ------------ |
+|   |   |   |
+|   |   |   |
+
+
+
 ## UI Explanation
 
 <table>
-<thead>
-<tr class="header" align="left">
-<th><div class="content-wrapper" title="">
+<tr align="left">
+<td><div class="content-wrapper" title="">
 <p align="left">
     <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_1.png" width="880"></p>
 </div></th>
-<th><p align="left">After successfully installing that script, you should see following UI window somewhere in the middle of screen.</p>
+<td><p align="left">After successfully installing that script, you should see following UI window somewhere in the middle of screen.</p>
 <ol>
-<li>Model Params
+<li>**Model Params**
 <ol>
-<li>Scale: use this to set your export scale. If for instance your model was exported from Object Builder with "Master Scale" set to 10, then use 10. Default is 10.</li>
-<li>Source: animation source which will be stored in macros. You can use of the existing animation sources or type some custom one if you are working with objects/vehicles.</li>
-<li>Model center: picker for center of the model - this is very important when working with reload animations since if this is not defined, then script will assume that center is located at [0,0,0] coordinates (<em>which is fine for i.e. objects</em>) and produce fault result. Right click on that button resets it default value (0,0,0 coords)</li>
-<li>Parent Object: Use if you have multi bone setup like magazine being part of barrel which is folded during reload.</li>
-<li>Child Object: Use that button to pick object which you want to export transformations from.</li>
+<li>**Scale:** use this to set your export scale. If for instance your model was exported from Object Builder with "Master Scale" set to 10, then use 10. Default is 10.</li>
+<li>**Source**: animation source which will be stored in macros. You can use of the **existing animation sources** or type some custom one if you are working with objects/vehicles.</li>
+<li>**Model center**: picker for center of the model - **this is very important when working with reload animations** since if this is not defined, then script will assume that center is located at [0,0,0] coordinates (<em>which is fine for i.e. objects</em>) and produce fault result. Right click on that button resets it default value (0,0,0 coords)</li>
+<li>**Parent Object**: Use if you have multi bone setup like magazine being part of barrel which is folded during reload.</li>
+<li>**Child Object**: Use that button to pick object which you want to export transformations from.</li>
 </ol></li>
-<li>Save params
+<li>**Save params**
 <ol>
-<li>Add animations macros: animation macros contains, as name suggest, macros for all animations. In case you would like to use some custom values (like range being from 0 to 100 instead of default 0-1) then feel free to do so. By default it's on and I recommend to leave it this way</li>
-<li>Save path: path to file were your output will be stored. You can either paste path manually there or use "Pick save path" button to do so.</li>
-<li>Pick save path: button for selecting output file</li>
-<li>Start Exporting: fun!</li>
+<li>**Add animations macros**: animation macros contains, as name suggest, macros for all animations. In case you would like to use some custom values (like range being from 0 to 100 instead of default 0-1) then feel free to do so. By default it's on and I recommend to leave it this way</li>
+<li>**Save path**: path to file were your output will be stored. You can either paste path manually there or use "**Pick save path**" button to do so.</li>
+<li>**Pick save path**: button for selecting output file</li>
+<li>**Start Exporting**: fun!</li>
 </ol></li>
 </ol></th>
-</tr>
-</thead>
+</td>
 <tbody>
 </tbody>
 </table>
