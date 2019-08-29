@@ -55,7 +55,7 @@ in them I would recommend using Google to find them.
 <ol>
 <li>**Model Params**
 <ol>
-<li>**Scale:** use this to set your export scale. If for instance your model was exported from Object Builder with "Master Scale" set to 10, then use 10. Default is 10.</li>
+<li><b> Scale:</b>  use this to set your export scale. If for instance your model was exported from Object Builder with "Master Scale" set to 10, then use 10. Default is 10.</li>
 <li>**Source**: animation source which will be stored in macros. You can use of the **existing animation sources** or type some custom one if you are working with objects/vehicles.</li>
 <li>**Model center**: picker for center of the model - **this is very important when working with reload animations** since if this is not defined, then script will assume that center is located at [0,0,0] coordinates (<em>which is fine for i.e. objects</em>) and produce fault result. Right click on that button resets it default value (0,0,0 coords)</li>
 <li>**Parent Object**: Use if you have multi bone setup like magazine being part of barrel which is folded during reload.</li>
