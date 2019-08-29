@@ -151,7 +151,7 @@ free to leave him some bucks
   
 
 Once you have your animation exported to FBX, you can use
-**FBXtoRTM **tool which comes with **Arma 3 Tools** package. Kiory
+**FBXtoRTM** tool which comes with **Arma 3 Tools** package. Kiory
 created some handy batch file ( *toRTM.bat in example data*) for quick,
 drag & drop conversion of multiple FBX files to rtm and I recommend to
 use them. Before using it though, make sure to copy
