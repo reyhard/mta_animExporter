@@ -1,5 +1,3 @@
-  
-
 ## Overview
 
 RV Engine supports direct type transformations which allows creators to
@@ -26,13 +24,13 @@ bottom of that manual.
 ## Installation
 
 If you want to start Frame Exporter on 3DS Max startup then paste
-[ExportFrameData.ms](http://ExportFrameData.ms) to **scripts\\startup**
+**ExportFrameData.ms** to **scripts\\startup**
 folder. There are also other ways to set it up and if you are interested
 in them I would recommend using Google to find them.
 
 *Example path:*
 
-C:\\Program Files\\Autodesk\\3ds Max 2018\\scripts\\Startup
+`C:\Program Files\Autodesk\3ds Max 2018\scripts\Startup`
 
 -----
 
@@ -89,7 +87,7 @@ in **child bone** helper.
 In current form, script is creating **translation** and **rotation**
 transformations separately and that means that your skeleton needs to be
 prepared accordingly. More about is written in section "*Importing
-animation to model.cf"*
+animation to model.cfg"*
 
 -----
 
@@ -145,8 +143,8 @@ free to leave him some bucks
   
 
 Once you have your animation exported to FBX, you can use
-**FBXtoRTM **tool which comes with **Arma 3 Tools** package. Kiory
-created some handy batch file ( *toRTM.bat in example data*) for quick,
+**FBXtoRTM **tool which comes with **Arma 3 Tools** package. Kiory
+created some handy batch file ( *toRTM.bat in example data*) for quick,
 drag & drop conversion of multiple FBX files to rtm and I recommend to
 use them. Before using it though, make sure to copy
 **modelBoxKiory.xml** to **FBXtoRTM** folder in **Arma 3 Tools** ( *i.e.
@@ -205,24 +203,43 @@ your exported animation to model.cfg
 
 *Example model.cfg file with proper includes for exported files*
 
-class CfgSkeletons { class weapon\_animexp\_skeleton { pivotsModel="";
-isDiscrete = 0; skeletonInherit = ""; skeletonBones\[\] = {
-"magazine\_base", "", "magazine", "magazine\_base" }; }; }; class
-CfgModels { class weapon\_example { skeletonName =
-"weapon\_animexp\_skeleton"; sectionsInherit = ""; sections\[\] = {};
-class Animations { \#include "exportedAnims\_weapon.hpp" }; }; };
+    class CfgSkeletons
+    {
+        class weapon_animexp_skeleton
+        {
+            pivotsModel="";
+            isDiscrete = 0;
+            skeletonInherit = "";
+            skeletonBones[] =
+            {
+                "magazine_base",    "",
+                    "magazine",     "magazine_base"
+            };
+        };
+    };
+     
+    class CfgModels
+    {
+        class weapon_example
+        {
+            skeletonName    = "weapon_animexp_skeleton";
+            sectionsInherit = "";
+            sections[]      = {};
+            class Animations
+            {
+                #include "exportedAnims_weapon.hpp"
+            };
+        };
+    };
 
   
 
 As it was mentioned before, it's quite important to have your **skeleton
 setup correctly**. Take a look at above example and don't forget to
 create parent bone with name following this scheme
-
-"**nameOfYourSelectionInP3D**<span style="color: rgb(128,0,0);">\_base</span>",
-"",
-
-"**nameOfYourSelectionInP3D**",
-"**nameOfYourSelectionInP3D**<span style="color: rgb(128,0,0);">\_base"</span>
+    
+       "nameOfYourSelectionInP3D_base", "",
+       "nameOfYourSelectionInP3D", "nameOfYourSelectionInP3D_base"
 
 **nameOfYourSelectionInP3D**<span style="color: rgb(128,0,0);">\_base</span>
 doesn't need to be present in P3D - it's artificial bone which is only
