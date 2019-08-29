@@ -1,3 +1,5 @@
+  
+
 ## Overview
 
 RV Engine supports direct type transformations which allows creators to
@@ -40,7 +42,8 @@ in them I would recommend using Google to find them.
 <thead>
 <tr class="header">
 <th><div class="content-wrapper" title="">
-
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_1.png" width="880"></p>
 </div></th>
 <th><p>After successfully installing that script, you should see following UI window somewhere in the middle of screen.</p>
 <p><br />
@@ -83,7 +86,9 @@ in **child bone** helper.
 -----
 
 ## Usage
-
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_9.png" width="480"></p>
+	
 In current form, script is creating **translation** and **rotation**
 transformations separately and that means that your skeleton needs to be
 prepared accordingly. More about is written in section "*Importing
@@ -121,6 +126,9 @@ might be quite tricky in some situations.
 After importing weapon to template rig, you will end up with something
 like this.
 
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_2.png" width="480"></p>
+	
 Go to modify tab and detach elements you would like to animate
 separately & don't forget about you model center box. After that,
 organize your weapon into segments and make weapon as child of "model
@@ -128,12 +136,18 @@ center" selection. Once you are ready, rotate weapon by 90 degrees and
 use align button on **Weapon Holder** (big green box). You should have
 something like this as a result.
 
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_3.png" width="480"></p>
+	
 Now you are ready for creation of your first reload animation\!
 
 -----
 
 ### Exporting animation to RTM
 
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_4.png" width="480"></p>
+	
 After you are done with your animation you would most likely would like
 to try it in game. In order to do so, let's begin with basic export of
 FBX. That process is covered in detail in **Kiory** tutorial so if you
@@ -162,22 +176,13 @@ animation to FBX, try to disable deformations in export dialog.*
 
   
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
 -----
 
 ### Importing animation to model.cfg
 
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_5.png" width="480"></p>
+	
 In order to export animation, first select model center (if it wasn't
 automatically detected by script) and then pick children bone. Since we
 are not animating "**weapon**" bone at all, **model center will be
@@ -257,12 +262,16 @@ Max files were saved in **2018 version**.
 First demo - **plane\_export** - involves export of plane movement and
 is basic demo of how to use it with vehicles.
 
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_6.gif" width="480"></p>
+	
 Second one - **weapon\_export** - is example reload animation with whole
 scene already set up for use. Note that this animation rig was created
 by **Kiory** and kudos to him for letting me use it as a showcase for
 that animation exporter\!
 
-  
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_7.gif" width="480"></p>
 
 -----
 
@@ -274,8 +283,13 @@ that animation exporter\!
 won't work. In order to bypass it, I've created invisible box which
 makes me sure that model will be in same spot after being autocentered.*
 
------
 
+<p align="left">
+    <img src="https://raw.githubusercontent.com/reyhard/mta_animExporter/master/AnimExporter/pictures/animExpoter_8.png" width="480"></p>
+	
+	
+	
+-----
 ## Useful links
 
 <https://github.com/reyhard/mta_animExporter> - GitHub repository with
