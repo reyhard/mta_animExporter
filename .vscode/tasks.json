@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {          
+            "label": "Execute in Max",
+            "type": "process",
+            "command": "C:/Program Files/Autodesk/3ds Max 2021/MXSPyCOM.exe",
+            "args": ["-f", "${file}"],
+            "presentation": {
+              "reveal": "always",
+              "panel": "new"
+          }
+        }
+    ]
+}

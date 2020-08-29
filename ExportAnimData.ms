@@ -13,7 +13,6 @@ buttonHeight = 50
 buttonWidth = 170
 
 animExporter_savePath = ""
-animExporter_modelCenter = (getNodeByName animExporter_defaultCenter) 
 animExporter_ID_startFrame = 0
 animExporter_ID_endFrame = 1
 animExporter_ID_animationName = 2
