@@ -104,8 +104,8 @@ rollout exportFrameDataMainUI "Animation Data"
 		FBXExporterSetParam "FileVersion" "FBX200900"
 		FBXExporterSetParam "Animation" true
 		FBXExporterSetParam "BakeAnimation" true
-		FBXExporterSetParam "BakeFrameStart" animExporter_startFrame
-		FBXExporterSetParam "BakeFrameEnd" animExporter_endFrame
+		--FBXExporterSetParam "BakeFrameStart" animExporter_startFrame
+		--FBXExporterSetParam "BakeFrameEnd" animExporter_endFrame
 		FBXExporterSetParam "BakeResampleAnimation" false
 		FBXExporterSetParam "ShowWarnings" false
 		completeFilePath = (animExporter_savePath + "/" + animExporter_animationName)
